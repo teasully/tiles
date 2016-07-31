@@ -55,12 +55,12 @@ public class Avatar3D extends EntityTile3D {
         this.jump = null;
         // Load sound(s)
         this.tick = new Sound(R.raw.tick1);
-        this.sCork1 = new Sound(R.raw.cork1);
-        this.sCork2 = new Sound(R.raw.cork2);
-        this.sCork3 = new Sound(R.raw.cork3);
-        this.sCork4 = new Sound(R.raw.cork4);
-        this.sCork5 = new Sound(R.raw.cork5);
-        this.sCork6 = new Sound(R.raw.cork6);
+        this.sCork1 = new Sound(R.raw.cork_c);
+        this.sCork2 = new Sound(R.raw.cork_d);
+        this.sCork3 = new Sound(R.raw.cork_e);
+        this.sCork4 = new Sound(R.raw.cork_f);
+        this.sCork5 = new Sound(R.raw.cork_a);
+        this.sCork6 = new Sound(R.raw.cork_b);
         // Set speeds
         this.deltaTimeModifier = 2.f;
         GravityAxis.dtModifier = this.deltaTimeModifier;

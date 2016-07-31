@@ -9,12 +9,12 @@ import java.util.Vector;
  */
 public class MaterialManager{
 
-    static Vector<Material> materials;
+    static Material[] materials;
 
     private static Material saveMaterial;
 
     public static void init() {
-        materials = new Vector<>();
+        materials = new Material[0];
         // Basic colors
         newMaterial("LightBlue", new float[]{0.1f, 0.1f, 0.8f});
         newMaterial("Black", new float[]{0.2f, 0.2f, 0.2f});
@@ -41,11 +41,10 @@ public class MaterialManager{
             return;
         }
         int index = getMaterialIndex(matName);
-        String programName = materials.get(index).programName;
-        float opacity = materials.get(index).opacity;
+        String programName = materials[index].programName;
+        float opacity = materials[index].opacity;
 
-        materials.remove(index);
-        materials.add(new Material(matName, programName, new LightProperties(color.vector, color.vector, color.vector), 0.f, opacity));
+        materials[index] = new Material(matName, programName, new LightProperties(color.vector, color.vector, color.vector), 0.f, opacity);
     }
 
     public static ChessPiece.WeaponColor getColor(String materialName){
@@ -58,22 +57,13 @@ public class MaterialManager{
         return ChessPiece.WeaponColor.GREEN;
     }
 
-    public static boolean isMaterial(String materialName){
-        // Error handling for instant-run
-        if(materials == null || materials.size() == 0){
-            MaterialManager.init();
-        }
-        // More error handling; lists get wiped after restart?
-        try {
-            for (Material material : materials) {
-                if (material.name.equals(materialName)) {
-                    return true;
-                }
+    public static boolean isMaterial(String materialName) {
+        for (Material material : materials) {
+            if (material.name.equals(materialName)) {
+                return true;
             }
-            return false;
-        }catch(Exception e){
-            return false;
         }
+        return false;
     }
 
     public static boolean saveMaterial(String materialName){
@@ -88,10 +78,9 @@ public class MaterialManager{
     }
 
     public static boolean loadSavedMaterialOnto(String materialName){
-        for(int i = 0; i < materials.size(); i++){
-            if(materials.get(i).name.equals(materialName)){
-                materials.remove(i);
-                materials.add(saveMaterial);
+        for(int i = 0; i < materials.length; i++){
+            if(materials[i].name.equals(materialName)){
+                materials[i] = saveMaterial;
                 return true;
             }
         }
@@ -111,10 +100,9 @@ public class MaterialManager{
             //Log.e("MaterialManager", "Trying to restoreSavedMaterial on null savedMaterial");
             return false;
         }
-        for(int i = 0; i < materials.size(); i++){
-            if(materials.get(i).name.equals(saveMaterial.name)){
-                materials.remove(i);
-                materials.add(saveMaterial);
+        for(int i = 0; i < materials.length; i++){
+            if(materials[i].name.equals(saveMaterial.name)){
+                materials[i] = saveMaterial;
                 return true;
             }
         }
@@ -196,7 +184,10 @@ public class MaterialManager{
             }
         }
         Material material = new Material(name, programName, new LightProperties(color, color, color), 0.0f, opacity);
-        materials.add(material);
+        Material[] temp = new Material[materials.length + 1];
+        System.arraycopy(materials, 0, temp, 0, materials.length);
+        temp[materials.length] = material;
+        materials = temp;
         return material;
     }
 
