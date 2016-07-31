@@ -63,7 +63,7 @@ public class BasicEntity extends Logable {
                     angularVelocity[0], angularVelocity[1], angularVelocity[2],
                     scalingVelocity[0], scalingVelocity[1], scalingVelocity[2]};
         }
-        // Update position | rotation | scale with velocity data
+        // Update tilePosition | rotation | scale with velocity data
         if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0) {
             movePosition(new float[]{this.velocity[0], this.velocity[1], this.velocity[2]});
         }
@@ -118,6 +118,9 @@ public class BasicEntity extends Logable {
     }
 
     protected void updateMesh() {
+        if(this.currentAnimation == null){
+            return;
+        }
         int gotID = this.currentAnimation.getcurrentFrame();
         this.model.meshID = gotID;
         if (gotID == -1) {
@@ -190,11 +193,11 @@ public class BasicEntity extends Logable {
 
     protected void setPosition(float[] position) {
         if (position.length != 3) {
-            LOGE("Trying to setPosition with position[] of invalid length");
+            LOGE("Trying to setPosition with tilePosition[] of invalid length");
         } else {
             for (int i = 0; i < 3; i++) {
                 if (Float.isNaN(position[i])) {
-                    LOGE(String.format("Trying to movePosition position index %d to NaN", i));
+                    LOGE(String.format("Trying to movePosition tilePosition index %d to NaN", i));
                 } else {
                     this.position[i] = position[i];
                 }
@@ -208,7 +211,7 @@ public class BasicEntity extends Logable {
         } else {
             for (int i = 0; i < 3; i++) {
                 if (Float.isNaN(offset[i])) {
-                    LOGE(String.format("Trying to movePosition position index %d by NaN", i));
+                    LOGE(String.format("Trying to movePosition tilePosition index %d by NaN", i));
                 } else {
                     this.position[i] += offset[i];
                 }
@@ -280,7 +283,7 @@ public class BasicEntity extends Logable {
                     if (attribute.attributeType == AttributeType.RAWMODEL) {
                         RawModel model = (RawModel) attribute;
                         if (model.visible) {
-                            model.draw(this.position, this.rotation, this.scale);
+                            model.draw(this.tilePosition, this.rotation, this.scale);
                         }
                     }
                 }
@@ -309,7 +312,7 @@ public class BasicEntity extends Logable {
         float[] modelMatrix = new float[16];
 
         Matrix.setIdentityM(modelMatrix, 0);
-        Matrix.translateM(modelMatrix, 0, position[0], position[1],position[2]);  // Combine global position with local position
+        Matrix.translateM(modelMatrix, 0, tilePosition[0], tilePosition[1],tilePosition[2]);  // Combine global tilePosition with local tilePosition
         for(int i = 0; i < 3; i++){
             Matrix.rotateM(modelMatrix, 0, rotation[i],
                     (i == 0 ? 1f : 0f),
@@ -325,7 +328,7 @@ public class BasicEntity extends Logable {
         if(model == null){
             return new float[]{};
         }
-        return model.getModelMatrixWithGlobal(this.position, this.rotation, this.scale);
+        return model.getModelMatrixWithGlobal(this.tilePosition, this.rotation, this.scale);
     }*/
 
     protected void addEase(EaseType type) {

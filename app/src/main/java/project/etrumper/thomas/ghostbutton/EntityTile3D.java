@@ -7,7 +7,7 @@ public class EntityTile3D extends BasicEntity {
 
     Vector3i tilePosition;
 
-    int lastInputHandler = 0;
+    int lastInputHandler = -1;
 
     float heightRadius, widthRadius;
 

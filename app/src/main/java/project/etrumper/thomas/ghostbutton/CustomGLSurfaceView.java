@@ -15,7 +15,7 @@ import java.util.ArrayList;
 /**
  * Created by thoma on 2/10/2016.
  */
-public class CustomGLSurfaceView extends GLSurfaceView implements GestureOverlayView.OnGesturePerformedListener{
+public class CustomGLSurfaceView extends GLSurfaceView{
 
     private CustomGLRenderer renderer;
 
@@ -43,15 +43,5 @@ public class CustomGLSurfaceView extends GLSurfaceView implements GestureOverlay
 
         //TouchManager.handleTouch(e);
         return true;
-    }
-
-    @Override
-    public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
-        ArrayList<Prediction> predictions =
-                GestureManager.gestureLibrary.recognize(gesture);
-        if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
-            String action = predictions.get(0).name;
-
-        }
     }
 }

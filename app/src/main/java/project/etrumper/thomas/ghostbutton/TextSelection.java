@@ -46,11 +46,10 @@ public class TextSelection extends Text {
     @Override
     protected void draw(){
         if(MaterialManager.getColor("Letter") == WeaponColor.GREEN) {
-            MaterialManager.changeMaterialColor("Letter", WeaponColor.GREEN);
+            MaterialManager.changeMaterialColor("Letter",MaterialManager.getVector3fColor("Green"));
         }
         this.options[Overlay.getRemainder(currentSelection, this.options.length)].draw();
-
-        MaterialManager.changeMaterialColor("Letter", WeaponColor.RED);
+        MaterialManager.changeMaterialColor("Letter",MaterialManager.getVector3fColor("Red"));
         super.draw();
     }
 

@@ -22,7 +22,6 @@ public class TouchManager{
     }
 
     static int moveSampleIter = 0;
-    static final int NUMSAMPLES = 0;
 
     static int holdDOWNID = 0;
 
@@ -74,12 +73,16 @@ public class TouchManager{
     }
 
     static public void onDown(MotionEvent e){
+        // Set and increment some local variables
         down = true;
         mPreviousX = e.getX();
         mPreviousY = e.getY();
         moveSampleIter = 0;
         performed = false;
         DOWNID++;
+        // Bug check for the controller
+        GameConstants.controller.justReleased = false;
+        // If is the first time onDown() is called; finger just pressed
         if (!lastDown) {
             lastDown = true;
             GameConstants.controller.justPressed = true;

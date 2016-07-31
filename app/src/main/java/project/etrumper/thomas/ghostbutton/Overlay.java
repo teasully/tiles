@@ -17,7 +17,7 @@ public class Overlay {
         lastScreen = null;
 
     // Main menu is shown on app creation
-    static TextMenu mainMenu = new TextMenu("wip", "play", "options", "nothing here") {
+    static TextMenu mainMenu = new TextMenu("blocked", "play", "extras") {
         // start the game
         @Override
         protected void tapped0(PieceDirection direction) {
@@ -38,7 +38,7 @@ public class Overlay {
         }
     },
     // Options menu handles all the customizable options
-    optionsMenu = new TextMenu("options", "placeholder", "back") {
+    optionsMenu = new TextMenu("extras", "placeholder", "back") {
         // Init selectors
         @Override
         protected void init(){
@@ -89,7 +89,7 @@ public class Overlay {
         }
     },
     // Pause menu when game is paused..
-    pauseMenu = new TextMenu("pause", "resume", "options", "restart", "exit"){
+    pauseMenu = new TextMenu("pause", "resume", "extras", "restart", "exit"){
         // Resume game
         @Override
         protected void tapped0(PieceDirection direction){
@@ -122,6 +122,10 @@ public class Overlay {
         }
     },
             currentMenu = mainMenu;
+
+    static TextMenu[] menus = new TextMenu[]{
+            mainMenu, optionsMenu, startMenu, pauseMenu
+    };
 
     static EntityTile3D LeftArrow,
             LeftButton,
@@ -185,10 +189,10 @@ public class Overlay {
         }else if(currentScreen == CurrentScreen.PAUSE){
             currentMenu = pauseMenu;
         }
+        // Update current menu to prevent graphical glitch
+        currentMenu.update();
         // Set current selection to 0
-        currentMenu.selcted = 0;
-        // Move menu
-        currentMenu.position = new float[]{0f, 0f, 0f + GameConstants.menuCameraZoom};
+        currentMenu.selcted = -1;
         /*/ Fix camera rotation and focus
         if(currentScreen == CurrentScreen.OVERLAY_ONLY){
             GameConstants.camera.startEase(savedPosition, 500);
@@ -196,9 +200,9 @@ public class Overlay {
             GameConstants.camera.easeUpVectorTo(new float[]{0, 0f, 1f}, 500);
         }else{
             // Focus camera onto menu
-            currentMenu.position = new float[]{savedTarget[0], savedTarget[1], savedTarget[2] - 3f};
-            GameConstants.camera.startEase(new float[]{currentMenu.position[0], currentMenu.position[1], currentMenu.position[2] - GameConstants.menuCameraZoom}, 500);
-            GameConstants.camera.easeTargetTo(currentMenu.position, 500);
+            currentMenu.tilePosition = new float[]{savedTarget[0], savedTarget[1], savedTarget[2] - 3f};
+            GameConstants.camera.startEase(new float[]{currentMenu.tilePosition[0], currentMenu.tilePosition[1], currentMenu.tilePosition[2] - GameConstants.menuCameraZoom}, 500);
+            GameConstants.camera.easeTargetTo(currentMenu.tilePosition, 500);
             GameConstants.camera.easeUpVectorTo(new float[]{0, 1f, 0f}, 500);
         }*/
     }
@@ -206,6 +210,11 @@ public class Overlay {
     static int pressed = 0;
 
     public static void init() {
+        // Set menus' positions
+        for(TextMenu menu : menus){
+            menu.position = new float[]{0f, 0f, 0f + GameConstants.menuCameraZoom};
+        }
+        // Add specific functions to controls
         LeftArrow = new EntityTile3D("Scenery1", 1, 1){
             @Override
         protected void draw(){

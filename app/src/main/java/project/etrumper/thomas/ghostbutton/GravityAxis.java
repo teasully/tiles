@@ -13,8 +13,8 @@ public class GravityAxis extends Logable {
     float startPos,
             velocity;
 
-    static float gravity = -10f,
-        dtModifier = 2f;
+    float gravity = -10f;
+    static float dtModifier = 2f;
 
     GravityAxis(float startPos, float velocity, long length) {
         super("GravityAxis");

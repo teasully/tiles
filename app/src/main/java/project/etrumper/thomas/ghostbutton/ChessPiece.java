@@ -66,26 +66,7 @@ public abstract class ChessPiece extends BasicEntity {
 
         this.init(direction, type);
 
-        this.moveByBoardTo(x, y, 0);
-    }
 
-    protected void ActionUp() {
-        if (this.direction == PieceDirection.UP) {
-            this.position[1] += GameConstants.tileMap.tileWidth;
-
-            return;
-        }
-        if (this.direction == PieceDirection.DOWN) {
-            this.position[1] -= GameConstants.tileMap.tileWidth;
-
-            return;
-        }
-        if (this.direction == PieceDirection.LEFT) {
-            this.position[0] += GameConstants.tileMap.tileWidth;
-
-            return;
-        }
-        this.position[0] -= GameConstants.tileMap.tileWidth;
     }
 
     protected void addChild(ChessPiece piece){
@@ -101,9 +82,6 @@ public abstract class ChessPiece extends BasicEntity {
         this.children[this.children.length - 1] = piece;
     }
 
-    protected boolean canMove(Tile tile){
-        return (tile != null && tile.getPiece() == null);
-    }
 
     protected boolean canMove(){
         if(currentAnimation.getAnimationName().equals(aIdle.getAnimationName())){
@@ -112,35 +90,6 @@ public abstract class ChessPiece extends BasicEntity {
         return !currentAnimation.isPlaying;
     }
 
-    protected boolean canMoveBackward() {   // L R U D
-        Tile[] tiles = GameConstants.tileMap.getSurroundingTiles(this.tilePos);
-        int i = 1;
-        if (this.direction == PieceDirection.DOWN) {
-            i = 2;
-        }
-        if (this.direction == PieceDirection.UP) {
-            i = 3;
-        }
-        if (this.direction == PieceDirection.RIGHT) {
-            i = 0;
-        }
-        return (tiles[i] != null && tiles[i].getPiece() == null && tiles[i].claim(this.ID));
-    }
-
-    protected boolean canMoveForward() {
-        Tile[] tiles = GameConstants.tileMap.getSurroundingTiles(this.tilePos);
-        int i = 0;
-        if (this.direction == PieceDirection.DOWN) {
-            i = 3;
-        }
-        if (this.direction == PieceDirection.UP) {
-            i = 2;
-        }
-        if (this.direction == PieceDirection.RIGHT) {
-            i = 1;
-        }
-        return canMove(tiles[i]) && tiles[i].claim(this.ID);
-    }
 
     private void init(PieceDirection direction, PieceType type){
         this.direction = direction;
@@ -157,10 +106,6 @@ public abstract class ChessPiece extends BasicEntity {
         this.taskOverflow = null;
 
         this.playerControlled = false;
-    }
-
-    protected void remove(ChessPiece removedBy){
-        GameConstants.tileMap.removePiece(this);
     }
 
     protected void resolveRotationTo(PieceTask task){
@@ -262,21 +207,6 @@ public abstract class ChessPiece extends BasicEntity {
         return returnPieces;
     }
 
-    protected void moveBackward(){
-        if(this.direction == PieceDirection.DOWN){
-            this.position[1] += GameConstants.tileMap.tileWidth;
-            return;
-        }
-        if(this.direction == PieceDirection.UP){
-            this.position[1] -= GameConstants.tileMap.tileWidth;
-            return;
-        }
-        if(this.direction == PieceDirection.LEFT){
-            this.position[0] -= GameConstants.tileMap.tileWidth;
-            return;
-        }
-        this.position[0] += GameConstants.tileMap.tileWidth;
-    }
 
     protected void ActionLeft() {
         this.rotation[1] -= 90f;
@@ -308,86 +238,7 @@ public abstract class ChessPiece extends BasicEntity {
         this.direction = PieceDirection.UP;
     }
 
-    protected void moveByBoardTo(int ... tilePos){
-        // 3rd int sent upon ChessPiece constructor so error messages not produced
-        if(tilePos.length == 2) {
-            if (this.type == PieceType.ITEM) {
-                GameConstants.tileMap.removeItem(this);
-            } else {
-                GameConstants.tileMap.removePiece(this);
-            }
-        }
-        this.tilePos = new int[]{tilePos[0], tilePos[1]};
-        float[] pos = GameConstants.tileMap.getGlobalPosition(this.tilePos[0], this.tilePos[1]);
-        this.position = new float[]{ pos[0], pos[1], this.position[2]};
-        if(this.type == PieceType.ITEM){
-            GameConstants.tileMap.addItem(this);
-        }else {
-            GameConstants.tileMap.addPiece(this);
-        }
-    }
 
-    protected void moveForwardOnBoard() {
-        //SuperManager.tileMap.map[this.tilePos[0]][this.tilePos[1]].piece = null;
-        GameConstants.tileMap.removePiece(this);
-        if (this.direction == PieceDirection.DOWN) {
-            this.tilePos[1]--;
-        }else if (this.direction == PieceDirection.UP) {
-            this.tilePos[1]++;
-        }else if (this.direction == PieceDirection.LEFT) {
-            this.tilePos[0]++;
-        }else {
-            this.tilePos[0]--;
-        }
-        GameConstants.tileMap.addPiece(this);
-        //SuperManager.tileMap.map[this.tilePos[0]][this.tilePos[1]].piece = this;
-    }
-
-    protected void moveBackwardOnBoard() {
-        GameConstants.tileMap.removePiece(this);
-        if (this.direction == PieceDirection.DOWN) {
-            this.tilePos[1]++;
-        }else if (this.direction == PieceDirection.UP) {
-            this.tilePos[1]--;
-        }else if (this.direction == PieceDirection.LEFT) {
-            this.tilePos[0]--;
-        }else {
-            this.tilePos[0]++;
-        }
-        GameConstants.tileMap.addPiece(this);
-    }
-
-    protected void idle(){
-        this.currentAnimation = this.aIdle;
-        this.play();
-    }
-
-    protected void playSoundBasedOnCamera(Sound sound) {
-        float distanceToMakeSound = 16f;
-        // Check object is not too far to make sound
-        int[] cameraPos = GameConstants.tileMap.getTilePosition(GameConstants.camera.position);
-        if (TileMap.getDistance(cameraPos, this.tilePos) > distanceToMakeSound) {
-            //LOGE("Sound too far away");
-            return;
-        }
-        float left = 1f,
-                right = 1f;
-        double yDist = TileMap.getYDistance(cameraPos, this.tilePos);
-               // xDist = TileMap.getXDistance(cameraPos, this.tilePos);
-        //left += 0.5f * (xDist * -1.f / distanceToMakeSound);
-        //right += 0.5f * (xDist / distanceToMakeSound);
-        // Apply y distance
-        left -= ((float) yDist / distanceToMakeSound);
-        right -= ((float) yDist / distanceToMakeSound);
-        if (left < 0f) {
-            left = 0f;
-        }
-        if (right < 0f) {
-            right = 0f;
-        }
-        //LOGE(String.format("Playing %f %f", left, right));
-        SoundManager.soundPool.play(sound.soundID, left, right, 0, 0, 1.f);
-    }
 
     protected boolean queueTask(PieceTask task){
         if(this.tasks.toArray().length < MAXTASKS) {
@@ -466,8 +317,8 @@ public abstract class ChessPiece extends BasicEntity {
         }else{
             offset[0] = -offsetAmount;
         }
-        float[] gotPos = GameConstants.tileMap.getGlobalPosition(this.tilePos[0] + offset[0], this.tilePos[1] + offset[1]);
-        GameConstants.camera.startEase(new float[]{-gotPos[0], -gotPos[1], GameConstants.camera.position[2]}, 1000);
+       // float[] gotPos = GameConstants.tileMap.getGlobalPosition(this.tilePos[0] + offset[0], this.tilePos[1] + offset[1]);
+       // GameConstants.camera.startEase(new float[]{-gotPos[0], -gotPos[1], GameConstants.camera.position[2]}, 1000);
     }
 
     protected float getPlayerSpeed() {

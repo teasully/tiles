@@ -82,14 +82,14 @@ public class RawModel extends Attribute {
                     1, mat.lightProperties.diffuse, 0);
             GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "opacity"), mat.opacity);
 
-            float x = 0f, y = 0f;
+            /*float x = 0f, y = 0f;
             if(GameConstants.player != null){
                 x = GameConstants.player.position[0];
                 y = GameConstants.player.position[1];
             }
 
             GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pX"), x);
-            GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pY"), y);
+            GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pY"), y);*/
             GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "elapsedTime"), (SuperManager.globalTime / 1000.f));
 
             //Send light info to shader
@@ -115,7 +115,7 @@ public class RawModel extends Attribute {
         Matrix.translateM(modelMatrix, 0,
                 globalPosition[0] + position[0] + pivotPoint[0],
                 globalPosition[1] + position[1] + pivotPoint[1],
-                globalPosition[2] + position[2] + pivotPoint[2]);  // Combine global position with local position
+                globalPosition[2] + position[2] + pivotPoint[2]);  // Combine global tilePosition with local tilePosition
         for (int i = 0; i < 3; i++) {
             Matrix.rotateM(modelMatrix, 0, globalRotation[i] + this.rotation[i],
                     (i == 0 ? 1f : 0f),

@@ -48,7 +48,7 @@ public class Triangle extends RawModel {
             float dt = SuperManager.deltaTime / 1000f;
             this.position = new float[]{this.position[0] + (this.velocity[0] * dt), this.position[1] + (this.velocity[1] * dt), this.position[2] + (this.velocity[2] * dt)};
         }
-        //this.position = SuperManager.player.position;
+        //this.tilePosition = SuperManager.player.tilePosition;
     }
 
     public void draw(){
@@ -92,14 +92,14 @@ public class Triangle extends RawModel {
                 1, mat.lightProperties.diffuse, 0);
         GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "opacity"), mat.opacity);
 
-        float x = 0f, y = 0f;
-        if (GameConstants.player != null) {
+        /*float x = 0f, y = 0f;
+        if (GameConstant.player != null) {
             x = GameConstants.player.position[0];
             y = GameConstants.player.position[1];
         }
 
         GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pX"), x);
-        GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pY"), y);
+        GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "pY"), y);*/
         GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "elapsedTime"), (SuperManager.globalTime / 1000.f));
 
         //Send light info to shader

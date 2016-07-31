@@ -28,6 +28,7 @@ public class TileMap3D {
         for(Tile3D tile : this.tiles){
             tile.inputHandler(input);
         }
+       Controller.inputHandlerID++;
     }
 
     public void draw(){
@@ -56,11 +57,39 @@ public class TileMap3D {
             return null;
         }
         for(Tile3D tile : this.tiles){
-            if(Vector3i.equals(tile.position, tilePosition)){
+            if(Vector3i.equals(tile.tilePosition, tilePosition)){
                 return tile;
             }
         }
         return null;
+    }
+
+    public Tile3D getTile(EntityTile3D entity){
+        // Try and just get tile
+        Tile3D temp = this.getTile(entity.tilePosition);
+        // Check if resides in tile
+        if(temp.isChild(entity)){
+           return temp;
+        }
+        // Else search manually
+        for(Tile3D tile3D : this.tiles){
+            if(tile3D.isChild(entity)){
+                return tile3D;
+            }
+        }
+        return null;
+    }
+
+    public Tile3D getTileByDirection(Vector3i tilePos, Avatar3D.Direction direction){
+        if(direction == Avatar3D.Direction.NORTH){
+            return this.getNorthTile(tilePos);
+        }else if(direction == Avatar3D.Direction.SOUTH){
+            return this.getSouthTile(tilePos);
+        }else if(direction == Avatar3D.Direction.WEST){
+            return this.getWestTile(tilePos);
+        }else{
+            return this.getEastTile(tilePos);
+        }
     }
 
     public Tile3D[] get2DSurrounding(Vector3i tilePos) {
@@ -204,8 +233,13 @@ public class TileMap3D {
             // Pass ID to ObjectManager
             EntityTile3D entityTile3D = ObjectManager.getObject(Integer.parseInt(id), x, currentY, currentZ);
             // Create tile and add object
-            Tile3D tile = new Tile3D(entityTile3D);
-            tile.position = new Vector3i(x++, currentY, currentZ);
+            Tile3D tile;
+            if(entityTile3D!= null){
+                tile = new Tile3D(entityTile3D);
+            }else {
+                tile = new Tile3D();
+            }
+            tile.tilePosition = new Vector3i(x++, currentY, currentZ);
             // Expand tiles and add with arraycopy()
             Tile3D[] temp = new Tile3D[tiles.length + 1];
             System.arraycopy(tiles, 0, temp, 0, tiles.length);

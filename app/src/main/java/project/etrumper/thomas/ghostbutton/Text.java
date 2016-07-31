@@ -51,7 +51,7 @@ public class Text extends ChessPiece {
                     LOGE(String.format("Letter %c does not exist in library", c));
             }
         }
-        //this.position = new float[]{this.getLength() / 2f, 0f, 5f};
+        //this.tilePosition = new float[]{this.getLength() / 2f, 0f, 5f};
         this.position[2] = 5.f;
         this.rotation[1] = 180f;
 

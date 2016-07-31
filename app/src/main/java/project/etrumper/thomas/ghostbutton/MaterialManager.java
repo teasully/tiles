@@ -32,30 +32,6 @@ public class MaterialManager{
         newMaterial("Arrow", new float[]{0f, 0f, 0f}, 0.5f);
     }
 
-    public static void changeMaterialColor(String matName, Archer.WeaponColor color) { // // TODO: 5/26/2016 change swordColor to global
-        if (!isMaterial(matName)) {
-            // Create new material if does not exist
-            getMaterial(matName);
-        }
-        if (color == null) {
-            return;
-        }
-        String switchColor = "";
-        if (color == Archer.WeaponColor.RED) {
-            switchColor = "Red";
-        } else if (color == Archer.WeaponColor.GREEN) {
-            switchColor = "Green";
-        } else if (color == Archer.WeaponColor.BLUE) {
-            switchColor = "Blue";
-        }
-        int index = getMaterialIndex(matName);
-        String programName = materials.get(index).programName;
-        float opacity = materials.get(index).opacity;
-
-        materials.remove(index);
-        materials.add(new Material(matName, programName, materials.get(getMaterialIndex(switchColor)).lightProperties, 0.f, opacity));
-    }
-
     public static void changeMaterialColor(String matName, Vector3f color) { // // TODO: 5/26/2016 change swordColor to global
         if (!isMaterial(matName)) {
             // Create new material if does not exist
@@ -83,6 +59,11 @@ public class MaterialManager{
     }
 
     public static boolean isMaterial(String materialName){
+        // Error handling for instant-run
+        if(materials == null || materials.size() == 0){
+            MaterialManager.init();
+        }
+        // More error handling; lists get wiped after restart?
         try {
             for (Material material : materials) {
                 if (material.name.equals(materialName)) {
@@ -115,6 +96,14 @@ public class MaterialManager{
             }
         }
         return false;
+    }
+
+    public static Vector3f getVector3fColor(String mat){
+        Material material = getMaterial(mat);
+        if(material == null){
+            return null;
+        }
+        return new Vector3f(material.lightProperties.diffuse);
     }
 
     public static boolean restoreSavedMaterial(){

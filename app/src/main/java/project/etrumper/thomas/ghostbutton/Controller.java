@@ -2,6 +2,7 @@ package project.etrumper.thomas.ghostbutton;
 
 /**
  * Created by thoma on 4/29/2016.
+ * Property of boxedworks.
  */
 
 public class Controller extends BasicEntity{
@@ -28,6 +29,8 @@ public class Controller extends BasicEntity{
 
     static int inputHandlerID = 0;
 
+    static Sound sButtonPress = new Sound(R.raw.tick1);
+
     @Override
     protected void update() {
         if (Overlay.currentScreen == Overlay.CurrentScreen.OVERLAY_ONLY) {
@@ -37,6 +40,7 @@ public class Controller extends BasicEntity{
                 float y = (TouchManager.y / SuperManager.height);
                 Overlay.pressed = 0;
                 if (y >= 0.8f) {
+                    //sButtonPress.play();
                     float x = (TouchManager.x / SuperManager.width);
                     if (x <= 0.25f) {
                         GameConstants.tileMap3D.inputHandler("left_button");
@@ -56,13 +60,30 @@ public class Controller extends BasicEntity{
                     if(x <= 0.15f) {
                         // Pause button pressed
                         Overlay.pressed = 5;
+                        sButtonPress.play();
                     }
                 }
-                inputHandlerID++;
             }
             if(this.justReleased){
                 this.justReleased = false;
-                // Set overlay button # pressed to 0 for none
+                // Check if overlay had something selected
+                if(Overlay.pressed != 0){
+                    // Check for super jump cases
+                    switch(Overlay.pressed){
+                        // High jump released
+                        case(2):
+                            GameConstants.tileMap3D.inputHandler("middle_l_button_release");
+                            break;
+                        // Long jump released
+                        case(3):
+                            GameConstants.tileMap3D.inputHandler("middle_r_button_release");
+                            break;
+                    }
+                    // Play sound to deselect
+                    if(Overlay.pressed == 5) {
+                        sButtonPress.play();
+                    }
+                }
                 Overlay.pressed = 0;
                 // Check if needs pausing; tapped on top of screen
                 float y = (TouchManager.y / SuperManager.height);
@@ -74,14 +95,6 @@ public class Controller extends BasicEntity{
                     }
                 }
             }
-            /*if (this.cameraDirection != null) {
-                if (this.cameraDirection == ChessPiece.PieceDirection.UP) {
-                    GameConstants.player.queueTask(ChessPiece.PieceTask.UP);
-                } else if (this.cameraDirection == ChessPiece.PieceDirection.DOWN) {
-                    GameConstants.player.queueTask(ChessPiece.PieceTask.DOWN);
-                }
-                this.cameraDirection = null;
-            }*/
         }else{
             // Get selection off of rough y
             int selection = (int)((TouchManager.y / SuperManager.height - 0.45f) * 15.5f),
@@ -90,29 +103,23 @@ public class Controller extends BasicEntity{
             if(selection > numElements || selection < 0){
                 selection = -1;
             }
-            int oldSelection = Overlay.currentMenu.selcted;
-            Overlay.currentMenu.selcted = selection;
-            // Only play sound if new selection
-            if(oldSelection != selection) {
-                Overlay.currentMenu.sMove.play();
+            // Make sound if just pressed on selection
+            if(this.justPressed && selection != -1){
+                this.justPressed = false;
+                // Play button press sound
+                sButtonPress.play();
             }
-            // Send tap to menu
-            if(this.justReleased){
+            Overlay.currentMenu.selcted = selection;
+            // Send tap release to menu
+            if(this.justReleased && selection != -1){
                 this.justReleased = false;
+                // Play button release sound
+                sButtonPress.play();
                 // Fix double tap
                 this.justPressed = false;
                 // Send null if justReleased, no cameraDirection
                 Overlay.currentMenu.tapped(null);
             }
         }
-        /*/ Handle multiple taps
-        if(this.numTaps > 1){
-            this.justPressed = false;
-            this.justReleased = false;
-            // Change to pause screen
-            Overlay.handleMultiTap(this.numTaps);
-            TouchManager.performed = true;
-            this.numTaps = 0;
-        }*/
     }
 }

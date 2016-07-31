@@ -2,13 +2,14 @@ package project.etrumper.thomas.ghostbutton;
 
 /**
  * Created by thoma on 7/18/2016.
+ * Property of boxedworks.
  */
 public class Tile3D extends Logable{
 
     // Holds things in tile
     EntityTile3D[] children;
 
-    Vector3i position;
+    Vector3i tilePosition;
 
     Tile3D(){
         super("Tile3D");
@@ -143,6 +144,34 @@ public class Tile3D extends Logable{
         }
         // Did not find match
         return false;
+    }
+
+    public Tile3D north(){
+        return GameConstants.tileMap3D.getNorthTile(this.tilePosition);
+    }
+
+    public Tile3D south(){
+        return GameConstants.tileMap3D.getSouthTile(this.tilePosition);
+    }
+
+    public Tile3D west(){
+        return GameConstants.tileMap3D.getWestTile(this.tilePosition);
+    }
+
+    public Tile3D east(){
+        return GameConstants.tileMap3D.getEastTile(this.tilePosition);
+    }
+
+    public Tile3D top(){
+        return GameConstants.tileMap3D.getTopTile(this.tilePosition);
+    }
+
+    public Tile3D directional(Avatar3D.Direction direction){
+        return GameConstants.tileMap3D.getTileByDirection(this.tilePosition, direction);
+    }
+
+    public Tile3D bottom(){
+        return GameConstants.tileMap3D.getBottomTile(this.tilePosition);
     }
 
 }

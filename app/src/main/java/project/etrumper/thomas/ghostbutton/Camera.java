@@ -108,7 +108,7 @@ public class Camera extends BasicEntity {
     protected void updateCamera() {
         Matrix.setLookAtM(viewMatrix, // Output
                 0, // Output offset
-                position[0], position[1], position[2], // Camera position in world
+                position[0], position[1], position[2], // Camera tilePosition in world
                 target[0], target[1], target[2], // Target for camera to point towards
                 upVector[0], upVector[1], upVector[2]); // Sets the up vector
     }

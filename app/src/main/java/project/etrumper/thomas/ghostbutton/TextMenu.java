@@ -15,7 +15,7 @@ public class TextMenu extends ChessPiece {
 
     int selcted;
 
-    Sound sMove, sSelect;
+    Sound sSelect;
 
     TextMenu(String prompt, String... options) {
         super("TextMenu." + prompt, null, PieceType.STATIONARY);
@@ -27,8 +27,7 @@ public class TextMenu extends ChessPiece {
         // Set the default selection to 0
         this.selcted = 0;
         // Load sounds
-        this.sMove = super.loadSound(R.raw.typewrite_type);
-        this.sSelect = super.loadSound(R.raw.typewrite_slide);
+        this.sSelect = super.loadSound(R.raw.tick1);
         // Add selections
         for (String option : options) {
             addChild(new Text(option));
@@ -45,7 +44,7 @@ public class TextMenu extends ChessPiece {
     @Override
     protected void update() {
         super.update();
-        // Change y position to space out vertically
+        // Change y tilePosition to space out vertically
         float currenty = 3.5f,
                 dy = -1f;
         // Update prompt
@@ -83,17 +82,17 @@ public class TextMenu extends ChessPiece {
             return;
         }
         // Draw the prompt blue
-        MaterialManager.changeMaterialColor("Letter", WeaponColor.BLUE);
+        MaterialManager.changeMaterialColor("Letter",MaterialManager.getVector3fColor("Blue"));
         this.prompt.draw();
         int i = 0;
         for (ChessPiece selection : this.children) {
             // Draw the selected text green and the unselected red
             if (this.getSelection() != -1 && this.getSelection() == i) {
-                MaterialManager.changeMaterialColor("Letter", WeaponColor.GREEN);
+                MaterialManager.changeMaterialColor("Letter",MaterialManager.getVector3fColor("Green"));
                 // Draw pointer when drawing selection
                 this.pointer.draw();
             } else {
-                MaterialManager.changeMaterialColor("Letter", WeaponColor.RED);
+                MaterialManager.changeMaterialColor("Letter",MaterialManager.getVector3fColor("Red"));
             }
             // Cast the Text to use custom draw function for y-pos
             Text text = (Text) selection;
@@ -103,9 +102,6 @@ public class TextMenu extends ChessPiece {
     }
 
     protected void tapped(PieceDirection direction){
-        if(direction == null){
-            this.sSelect.play();
-        }
         //Check selections
         switch(this.getSelection()){
             case(0):

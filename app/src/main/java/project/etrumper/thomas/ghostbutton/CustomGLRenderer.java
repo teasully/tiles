@@ -52,10 +52,6 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
                     entity.draw();
                 }
             }
-            // Draw tile map
-            if(GameConstants.tileMap != null && GameConstants.tileMap.map != null) {
-                GameConstants.tileMap.draw();
-            }
             // Draw 3DTileMap
             if(GameConstants.tileMap3D != null){
                 GameConstants.tileMap3D.draw();

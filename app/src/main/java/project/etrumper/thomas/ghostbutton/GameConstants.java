@@ -2,6 +2,7 @@ package project.etrumper.thomas.ghostbutton;
 
 /**
  * Created by thoma on 6/20/2016.
+ * Property of boxedworks.
  */
 public class GameConstants {
 
@@ -29,9 +30,6 @@ public class GameConstants {
     static float[] sceneAmbience = new float[]{ambiance, ambiance, ambiance};
 
     static Controller controller;
-    static ChessPiece player;
-
-    static TileMap tileMap;
 
     static TileMap3D tileMap3D;
 
@@ -49,7 +47,7 @@ public class GameConstants {
     }
 
     public static void update() {
-        // Check if easing
+        /*/ Check if easing
         if (frameRateEase != null) {
             // Update frame rate
             frameRate = (long) frameRateEase.easeQuadradic();
@@ -62,7 +60,7 @@ public class GameConstants {
                 tileMap.changeFramerate(frameRate);
                 frameRateEase = null;
             }
-        }
+        }*/
         // Update camera
         camera.update();
         camera.updateCamera();
