@@ -69,10 +69,10 @@ public class Ease extends Attribute {
                         c = (easePoint[i] - startPosition[i]),
                         d = easeLengths[i];
                 float result = 0f;
-                if(easeType == EaseType.LINEAR){
-                    result = easeLinear(t, b, c, d);
-                }else if(easeType == EaseType.QUADRATIC){
-                    result = easeQuadradic(t, b, c, d);
+                if (easeType == EaseType.LINEAR) {
+                    result = (float) easeLinear(t / 1000f, b, c, d / 1000f);
+                } else if (easeType == EaseType.QUADRATIC) {
+                    result = (float) easeQuadradic(t / 1000f, b, c, d / 1000f);
                 }
                 velocities[i] = result;
             }
@@ -80,11 +80,11 @@ public class Ease extends Attribute {
         return velocities;
     }
 
-    private float easeLinear(float t, float b, float c, float d) {
+    private double easeLinear(double t, double b, double c, double d) {
         return c * t / d + b;
     }
 
-    private float easeQuadradic(float t, float b, float c, float d) {
+    private double easeQuadradic(double t, double b, double c, double d) {
         t /= d / 2f;
         if (t < 1f) {
             return c / 2f * t * t + b;
@@ -144,11 +144,11 @@ public class Ease extends Attribute {
             if (Float.isNaN(destination[i]) || destination[i] == 0.666f) {
                 // Either NaN or not needed
             } else {
-                float gPosition = object.getPosition()[i];
+                float gPosition = object.position[i];
                 if(mode == 1){
-                    gPosition = object.getRotation()[i];
+                    gPosition = object.rotation[i];
                 }else if(mode == 2){
-                    gPosition = object.getScale()[i];
+                    gPosition = object.scale[i];
                 }
                 float[] data = {i, mode, timeInMilli, gPosition, destination[i]};
                 ease.update(data);
@@ -173,13 +173,13 @@ public class Ease extends Attribute {
                 // Either NaN or not needed
             } else {
                 float velocity = object.positionalVelocity;
-                float gPosition = object.getPosition()[i];
+                float gPosition = object.position[i];
                 if(mode == 1){
                     velocity = object.anglarVelocity;
-                    gPosition = object.getRotation()[i];
+                    gPosition = object.rotation[i];
                 }else if(mode == 2){
                     velocity = object.scalingVelocity;
-                    gPosition = object.getScale()[i];
+                    gPosition = object.scale[i];
                 }
                 float time = Math.abs((destination[i] - gPosition) / velocity) * 1000.f;
                 float[] data = {i, mode, time, gPosition, destination[i]};
@@ -189,22 +189,22 @@ public class Ease extends Attribute {
     }
 
     public static void startEaseBy(float[] offset, BasicEntity object, int mode) {
-        float[] currentPosition = object.getPosition();
+        float[] currentPosition = object.position;
         if(mode == 1){
-            currentPosition = object.getRotation();
+            currentPosition = object.rotation;
         }else if(mode == 2){
-            currentPosition = object.getScale();
+            currentPosition = object.scale;
         }
         float[] newPosition = new float[]{currentPosition[0] + offset[0], currentPosition[1] + offset[1], currentPosition[2] + offset[2]};
         startEase(newPosition, object, mode);
     }
 
     public static void startEaseBy(float[] offset, BasicEntity object, long timeInMilli, int mode) {
-        float[] currentPosition = object.getPosition();
+        float[] currentPosition = object.position;
         if(mode == 1){
-            currentPosition = object.getRotation();
+            currentPosition = object.rotation;
         }else if(mode == 2){
-            currentPosition = object.getScale();
+            currentPosition = object.scale;
         }
         float[] newPosition = new float[]{currentPosition[0] + offset[0], currentPosition[1] + offset[1], currentPosition[2] + offset[2]};
         startEase(newPosition, object, timeInMilli, mode);

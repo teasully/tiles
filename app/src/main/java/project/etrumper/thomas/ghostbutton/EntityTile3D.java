@@ -5,11 +5,21 @@ package project.etrumper.thomas.ghostbutton;
  */
 public class EntityTile3D extends BasicEntity {
 
+    enum Direction {
+        NORTH,
+        SOUTH,
+        EAST,
+        WEST
+    }
+
     Vector3i tilePosition;
 
     int lastInputHandler = -1;
 
     float heightRadius, widthRadius;
+
+    Direction spawnDirection;
+    Vector3i spawnLocation;
 
     EntityTile3D(String libraryName, float widthRadius, float heightRadius){
         super(libraryName);
@@ -27,11 +37,11 @@ public class EntityTile3D extends BasicEntity {
     }
 
     protected void moveToPosition(Vector3i position){
-        this.setPosition(new float[]{position.x(), position.y(), position.z()});
+        this.position = (new float[]{position.x(), position.y(), position.z()});
     }
 
     protected void convertTilePosToGlobal(){
-        this.setPosition(new float[]{this.tilePosition.x(), this.tilePosition.y(), this.tilePosition.z()});
+        this.position = (new float[]{this.tilePosition.x(), this.tilePosition.y(), this.tilePosition.z()});
     }
 
     protected void inputHandler(String input){
@@ -54,6 +64,10 @@ public class EntityTile3D extends BasicEntity {
                 this.tilePosition.y(),
                 this.tilePosition.z()
         };
+    }
+
+    protected void setDirection(Direction direction){
+
     }
 
 }

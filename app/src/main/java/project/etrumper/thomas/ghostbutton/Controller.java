@@ -23,8 +23,6 @@ public class Controller extends BasicEntity{
         this.justReleased = false;
         this.timeHeld = 0;
         this.numTaps = 0;
-
-        this.addDrawElement();  // For updating, not drawing
     }
 
     static int inputHandlerID = 0;

@@ -5,13 +5,6 @@ package project.etrumper.thomas.ghostbutton;
  */
 public class Avatar3D extends EntityTile3D {
 
-    enum Direction {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST
-    }
-
     Ease2 movementEaseX, movementEaseY;
 
     GravityAxis jump;
@@ -22,20 +15,22 @@ public class Avatar3D extends EntityTile3D {
 
     boolean outOfMap = false;
 
+    //EntityTile3D diagon;
+
+    //Vector3i destination; // Used for diagon
+
     // Super-jump variables
     long jumpTimer = 0, // Keeps track of milli each jump
             releaseTimer = -1; // Tracks time button released
     boolean charging = false, // Tells when player is charging super-jump
             superHigh = false; // Tells if it is a high or long jump
 
-    Vector3i spawnPos;
-
     Avatar3D(Vector3i position) {
         super("CubeMonster", 0.45f, 0.3f);
 
         super.currentAnimation = addAnimation("idle");
-
-        this.spawnPos = position;
+        // Change TAG after loading animations
+        super.TAG = "Player";
 
         this.cameraDirection = Direction.NORTH;
         this.avatarDirection = Direction.NORTH;
@@ -64,6 +59,9 @@ public class Avatar3D extends EntityTile3D {
         // Set speeds
         this.deltaTimeModifier = 2.f;
         GravityAxis.dtModifier = this.deltaTimeModifier;
+        //this.diagon = new EntityTile3D("Scenery1", 0.3f, 0.3f);
+        //this.diagon.currentAnimation = this.diagon.addAnimation("diagon");
+        //this.destination = new Vector3i(0, 0, 0);
     }
 
     // Object constants
@@ -71,7 +69,8 @@ public class Avatar3D extends EntityTile3D {
             camera_z_zoom = 5f,
             player_z_jump = 5.6f;
     static long movement_speed = 1200, // Time in milli for movement to cease
-        super_jump_bias = 150; // Time in milli for lenience on performing super jumps
+        super_jump_bias = 150, // Time in milli for lenience on performing super jumps
+        easeTimes = 30;
 
     @Override
     protected void update() {
@@ -79,7 +78,7 @@ public class Avatar3D extends EntityTile3D {
         // Check to see if movement ease
         if (this.movementEaseX != null) {
             this.movementEaseX.update();
-            this.position[0] = this.movementEaseX.easeLinear();
+            this.position[0] = (float)this.movementEaseX.easeLinear();
             // Check if finished
             if (this.movementEaseX.done()) {
                 this.movementEaseX = null;
@@ -87,7 +86,7 @@ public class Avatar3D extends EntityTile3D {
         }
         if (this.movementEaseY != null) {
             this.movementEaseY.update();
-            this.position[1] = this.movementEaseY.easeLinear();
+            this.position[1] = (float)this.movementEaseY.easeLinear();
             // Check if finished
             if (this.movementEaseY.done()) {
                 this.movementEaseY = null;
@@ -98,7 +97,7 @@ public class Avatar3D extends EntityTile3D {
             // Increment jump timer
             this.jumpTimer += SuperManager.deltaTime;
             // Rotate cube
-            float rotateAmount = 3.2f * 1; // Last int is number of rotations while in air
+            float rotateAmount = 160.f * (SuperManager.deltaTime / 1000f);
             if (this.avatarDirection == Direction.NORTH) {
                 this.rotation[0] -= rotateAmount;
             } else if (this.avatarDirection == Direction.SOUTH) {
@@ -110,9 +109,9 @@ public class Avatar3D extends EntityTile3D {
             }
             // Update object and y-pos
             this.jump.update();
-            this.position[2] = jump.getPosition();
+            this.position[2] = (float)jump.getPosition();
             this.tilePosition.z((int) this.position[2]);
-            // Timeout remover
+            // Removes jump if falling for too long
             if (this.jump.done()) {
                 this.jump = null;
             } else {
@@ -121,6 +120,7 @@ public class Avatar3D extends EntityTile3D {
                 if (!this.outOfMap) {
                     // Check if done jumping
                     Tile3D belowTile = GameConstants.tileMap3D.getTile(this.getFixedPos());
+
                     // Check if out of map or if there is no solid
                     if (belowTile != null && !belowTile.hasSolid()) {
                         // Check if block below is solid
@@ -129,10 +129,10 @@ public class Avatar3D extends EntityTile3D {
                     if (belowTile != null && belowTile.hasSolid()) {
                         tileZ = belowTile.tilePosition.z() + (this.heightRadius + belowTile.children[0].heightRadius); // 1f to account for offset (tiles are one block lower)
                     }
-                }else{
+                } else {
                     // Is probably out of map.. check if is above map
                     Tile3D belowTile = GameConstants.tileMap3D.getFirstBottomTile(new Vector3i((int) this.position[0], (int) this.position[1], GameConstants.tileMap3D.dimensions.z() - 1));
-                    if(belowTile != null && belowTile.hasSolid()){
+                    if (belowTile != null && belowTile.hasSolid()) {
                         tileZ = belowTile.tilePosition.z() + (this.heightRadius + belowTile.children[0].heightRadius);
                     }
                 }
@@ -155,23 +155,29 @@ public class Avatar3D extends EntityTile3D {
                     // Record the time
                     this.releaseTimer = this.jumpTimer;
                     // If out ot map, put back
-                    if(this.outOfMap){
-                        this.position[0] = this.spawnPos.x();
-                        this.position[1] = this.spawnPos.y();
+                    if (this.outOfMap) {
+                        this.position[0] = this.spawnLocation.x();
+                        this.position[1] = this.spawnLocation.y();
                         this.position[2] = 30f;
-                        GameConstants.camera.target = this.position;
+                        this.resolveRoatationTo(this.spawnDirection);
+                        GameConstants.camera.target = new float[]{this.position[0], this.position[1], this.position[2]};
                         this.jump = new GravityAxis(this.position[2], -8f, 10000);
                         this.jump.gravity = 1f;
-                    }else{
+                    } else {
                         // Play sound
                         this.tick.play();
+                        // Get tile under self
+                        Tile3D belowTile = GameConstants.tileMap3D.getTile(this).bottom();
+                        // Check if is a disappearing block
+                        Block block = belowTile.getBlock();
+                        block.disappear();
                     }
                 }
             }
         }
         // Check if charging jump so can start timer
-        else{
-            if(this.charging){
+        else {
+            if (this.charging) {
                 this.releaseTimer += SuperManager.deltaTime;
             }
         }
@@ -182,6 +188,12 @@ public class Avatar3D extends EntityTile3D {
         // Adjust camera
         this.handleCamera();
     }
+
+    /*@Override
+    protected void draw(){
+        super.draw();
+        this.diagon.draw();
+    }*/
 
     @Override
     protected void inputHandler(String input) {
@@ -239,15 +251,23 @@ public class Avatar3D extends EntityTile3D {
     }
 
     protected void moveForward(int moveBy) {
-        long moveTime = (long)(movement_speed / deltaTimeModifier);
+        long moveTime = (long) (movement_speed / deltaTimeModifier);
         if (this.cameraDirection == Direction.NORTH) {
             this.movementEaseY = Ease2.getEase2(this.position[1], this.tilePosition.y() + moveBy, moveTime);
+            // Diagon updating
+            //this.destination = new Vector3i((int) this.position[0], (int) this.position[1] + moveBy + 2, (int) this.position[2] + 1);
         } else if (this.cameraDirection == Direction.SOUTH) {
             this.movementEaseY = Ease2.getEase2(this.position[1], this.tilePosition.y() - moveBy, moveTime);
+            // Diagon updating
+            //this.destination = new Vector3i((int) this.position[0], (int) this.position[1] - moveBy - 2, (int) this.position[2] + 1);
         } else if (this.cameraDirection == Direction.WEST) {
             this.movementEaseX = Ease2.getEase2(this.position[0], this.tilePosition.x() - moveBy, moveTime);
+            // Diagon updating
+            //this.destination = new Vector3i((int) this.position[0] - moveBy - 2, (int) this.position[1], (int) this.position[2] + 1);
         } else if (this.cameraDirection == Direction.EAST) {
             this.movementEaseX = Ease2.getEase2(this.position[0], this.tilePosition.x() + moveBy, moveTime);
+            // Diagon updating
+            //this.destination = new Vector3i((int) this.position[0] + moveBy + 2, (int) this.position[1], (int) this.position[2] + 1);
         }
         // Set avatar direction
         this.avatarDirection = this.cameraDirection;
@@ -342,7 +362,7 @@ public class Avatar3D extends EntityTile3D {
             // Overhead
             case (3):
                 player_camera_offset = .01f;
-                camera_z_zoom = 5f;
+                camera_z_zoom = 8f;
                 this.moveCameraTo();
                 this.moveCameraTargetTo();
                 break;
@@ -388,6 +408,7 @@ public class Avatar3D extends EntityTile3D {
         if(!this.canLongJump()){
             return;
         }
+
         // Start the movement ease
         this.moveForward(2);
         // Jump
@@ -569,6 +590,63 @@ public class Avatar3D extends EntityTile3D {
         return (this.jump != null);
     }
 
+    @Override
+    protected  void setDirection(Direction direction){
+        this.resolveRoatationTo(direction);
+    }
+
+    /*private void updateDiagon(){
+        this.diagon.update();
+        /// Check destination for errors
+        // Check if should drop to floor
+        Tile3D tile = GameConstants.tileMap3D.getFirstBottomTile(this.destination);
+        if (tile != null && tile.hasSolid()) {
+            this.destination.z(tile.tilePosition.z() + 1);
+        }
+        this.diagon.position = new float[]{this.destination.x(), this.destination.y(), this.destination.z()};
+        diagon.rotation[1] += 0.2f;
+    }*/
+
+    protected void resolveRoatationTo(Direction direction){
+        if(this.cameraDirection == Direction.NORTH){
+            if(direction == Direction.EAST){
+                this.turnCW_Z();
+            }else if(direction == Direction.SOUTH){
+                this.turnCW_Z();
+                this.turnCW_Z();
+            }else if(direction == Direction.WEST){
+                this.turnCCW_Z();
+            }
+        }else if(this.cameraDirection == Direction.SOUTH){
+            if(direction == Direction.WEST){
+                this.turnCW_Z();
+            }else if(direction == Direction.NORTH){
+                this.turnCW_Z();
+                this.turnCW_Z();
+            }else if(direction == Direction.EAST){
+                this.turnCCW_Z();
+            }
+        }else if(this.cameraDirection == Direction.WEST){
+            if(direction == Direction.NORTH){
+                this.turnCW_Z();
+            }else if(direction == Direction.EAST){
+                this.turnCW_Z();
+                this.turnCW_Z();
+            }else if(direction == Direction.SOUTH){
+                this.turnCCW_Z();
+            }
+        }else{
+            if(direction == Direction.SOUTH){
+                this.turnCW_Z();
+            }else if(direction == Direction.WEST){
+                this.turnCW_Z();
+                this.turnCW_Z();
+            }else if(direction == Direction.NORTH){
+                this.turnCCW_Z();
+            }
+        }
+    }
+
     protected void moveCameraTo() {
         this.moveCameraTo(new Vector3f(0f, 0f, 0f));
     }
@@ -584,7 +662,8 @@ public class Avatar3D extends EntityTile3D {
         } else {
             temp = new float[]{(this.position[0] - player_camera_offset) + offset.x(), (this.position[1]) + offset.y(), this.position[2] + camera_z_zoom + offset.z()};
         }
-        GameConstants.camera.startEase(temp, 60);
+        GameConstants.camera.easePositionTo(temp, easeTimes);
+        //GameConstants.camera.position = temp;
     }
 
     protected void moveCameraNextTo() {
@@ -598,7 +677,8 @@ public class Avatar3D extends EntityTile3D {
         } else {
             temp = new float[]{(this.position[0] - player_camera_offset), (this.position[1]), this.position[2] + camera_z_zoom};
         }
-        GameConstants.camera.startEase(temp, 50);
+        GameConstants.camera.easePositionTo(temp, easeTimes);
+        //GameConstants.camera.position = temp;
     }
 
     protected void moveCameraInto(){
@@ -613,7 +693,8 @@ public class Avatar3D extends EntityTile3D {
         }else{
             temp = new float[]{this.position[0] - horizontalOffset, this.position[1], this.position[2] + camera_z_zoom};
         }
-        GameConstants.camera.startEase(temp, 50);
+        GameConstants.camera.easePositionTo(temp, easeTimes);
+        //GameConstants.camera.position = temp;
     }
 
     protected void moveCameraTargetTo() {
@@ -626,22 +707,24 @@ public class Avatar3D extends EntityTile3D {
                 this.position[1] + offset.y(),
                 this.position[2] + offset.z(),
         };
-        GameConstants.camera.easeTargetTo(temp, 50);
+        GameConstants.camera.easeTargetTo(temp, easeTimes);
+        //GameConstants.camera.target = temp;
     }
 
-    protected void moveCameraTargetInFront(){
+    protected void moveCameraTargetInFront() {
         float hOffset = 1f;
-        Vector3f temp;
-        if(this.cameraDirection == Direction.NORTH){
-            temp = new Vector3f(0f, hOffset, camera_z_zoom);
-        }else if(this.cameraDirection == Direction.SOUTH){
-            temp = new Vector3f(0f, -hOffset, camera_z_zoom);
-        }else if(this.cameraDirection == Direction.WEST){
-            temp = new Vector3f(-hOffset, 0f, camera_z_zoom);
-        }else{
-            temp = new Vector3f(hOffset, 0f, camera_z_zoom);
+        float[] temp;
+        if (this.cameraDirection == Direction.NORTH) {
+            temp = new float[]{this.position[0], this.position[1] + hOffset, this.position[2] + camera_z_zoom};
+        } else if (this.cameraDirection == Direction.SOUTH) {
+            temp = new float[]{this.position[0], this.position[1] - hOffset, this.position[2] + camera_z_zoom};
+        } else if (this.cameraDirection == Direction.WEST) {
+            temp = new float[]{this.position[0] - hOffset, this.position[1], this.position[2] + camera_z_zoom};
+        } else {
+            temp = new float[]{this.position[0] + hOffset, this.position[1], this.position[2] + camera_z_zoom};
         }
-        this.moveCameraTargetTo(temp);
+        GameConstants.camera.easeTargetTo(temp, easeTimes);
+        //GameConstants.camera.target = temp;
     }
 
     protected Tile3D getFrontTile() {
@@ -666,6 +749,10 @@ public class Avatar3D extends EntityTile3D {
         } else {
             return GameConstants.tileMap3D.getEastTile(this.getFixedPos());
         }
+    }
+
+    public void fall(){
+        this.jump = new GravityAxis(this.position[2], 0f, 10000);
     }
 
     int sCounter = 0;

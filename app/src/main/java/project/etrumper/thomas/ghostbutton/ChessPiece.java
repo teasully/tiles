@@ -99,7 +99,7 @@ public abstract class ChessPiece extends BasicEntity {
 
         this.tilePos = new int[2];
 
-        this.position = new float[]{0f, 0f, GameConstants.zDepth};
+        //this.position = new float[]{0f, 0f, GameConstants.zDepth};
         this.rotation = new float[]{270f, 0f, 0f};
 
         this.tasks = new ArrayList<>(0);
@@ -297,29 +297,7 @@ public abstract class ChessPiece extends BasicEntity {
         return s;
     }
 
-    protected void moveCameraTo(){
-        int[] offset = new int[]{0, 0};
-        int offsetAmount = 2; // Amount moved forward by
-        // If survival, move camera more in front of player
-        if(GameConstants.gameMode == GameConstants.GameMode.SURVIVAL) {
-            if (GameConstants.cameraTilt) {
-                offsetAmount = 2;
-            } else {
-                offsetAmount = 8;
-            }
-        }
-        if(this.direction == PieceDirection.UP){
-            offset[1] = offsetAmount;
-        }else if(this.direction == PieceDirection.DOWN){
-            offset[1] = -offsetAmount;
-        }else if(this.direction == PieceDirection.LEFT){
-            offset[0] = offsetAmount;
-        }else{
-            offset[0] = -offsetAmount;
-        }
-       // float[] gotPos = GameConstants.tileMap.getGlobalPosition(this.tilePos[0] + offset[0], this.tilePos[1] + offset[1]);
-       // GameConstants.camera.startEase(new float[]{-gotPos[0], -gotPos[1], GameConstants.camera.position[2]}, 1000);
-    }
+
 
     protected float getPlayerSpeed() {
         switch (Overlay.optionsMenu.getData()[1]) {

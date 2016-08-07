@@ -1,32 +1,23 @@
 package project.etrumper.thomas.ghostbutton;
 
+import android.util.Log;
+
+import java.security.acl.LastOwnerException;
+
 /**
  * Created by thoma on 6/20/2016.
  * Property of boxedworks.
  */
 public class GameConstants {
 
-    enum GameMode {
-        ADVENTURE,
-        SURVIVAL
-    }
-
-    // Important game variables
-    static GameMode gameMode = GameMode.SURVIVAL;
-    // Archer
-    static boolean Drop_Arrows = false,
-            Lose_Arrows = false;
     static int Number_Colors = 1;    // Difficulty
     static float ambiance = 1f; // Amount of light (or RGB for more specific)
-    static int Max_Barricade_Health = 5,
-            Barricade_Health = Max_Barricade_Health;
 
     // Other
     static Camera camera;
-    static float menuCameraZoom = 12f;
-    static boolean cameraTilt = true;
+    static float menuCameraZoom = 12f,
+        defaultShininess = 1f;
 
-    static float zDepth = 7f;
     static float[] sceneAmbience = new float[]{ambiance, ambiance, ambiance};
 
     static Controller controller;
@@ -44,6 +35,8 @@ public class GameConstants {
 
     public static void init(){
         controller = new Controller();
+        // Load config
+        loadGame();
     }
 
     public static void update() {
@@ -61,6 +54,8 @@ public class GameConstants {
                 frameRateEase = null;
             }
         }*/
+        // Update controller
+        controller.update();
         // Update camera
         camera.update();
         camera.updateCamera();
@@ -68,6 +63,40 @@ public class GameConstants {
 
     public static void resetMap() {
         // Reset tileMap
-        tileMap3D = new TileMap3D(Maps.W0L0, Maps.W0L1, Maps.W0L2, Maps.W0L3, Maps.W0L4, Maps.W0L5);
+        tileMap3D = new TileMap3D(Maps.W0L0, Maps.W0L1, Maps.W0L2, Maps.W0L3);
+    }
+
+    public static void saveGame(){
+        String saveData = "";
+        // Save the camera mode
+        int cameraMode = Overlay.optionsMenu.getData()[0];
+        saveData = saveData.concat("camera_mode " + cameraMode + "\n");
+        // Save to internal storage
+        Loader.writeToFile(saveData);
+        LOGE("Saved game files");
+    }
+
+    public static void loadGame(){
+        // Retrieve string
+        String temp = Loader.readFromFile();
+        if(temp == null || temp.length() == 0 || temp.equals("")){
+            LOGE("No config.txt file to load");
+            return;
+        }
+        String[] datum = temp.split(System.getProperty("line.separator"));
+        for(String data : datum){
+            String[] words = data.split(" ");
+            switch (words[0]){
+                case("camera_mode"):
+                    TextSelection ts = (TextSelection) Overlay.optionsMenu.children[0];
+                    ts.currentSelection = Integer.parseInt(words[1]);
+                    break;
+            }
+        }
+        LOGE("Successfully loaded game files");
+    }
+
+    private static void LOGE(String message){
+        Log.e("GameConstants", message);
     }
 }

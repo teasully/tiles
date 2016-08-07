@@ -31,9 +31,12 @@ public class Light extends BasicEntity {
         positionalVelocity = 0.5f;
     }
 
-    @Override
     protected float[] getPosition() {
-        return super.getPosition();
+        return new float[]{
+                position[0],// - GameConstants.camera.position[0],
+                position[1],// - GameConstants.camera.position[1],
+                position[2]// - GameConstants.camera.position[2]
+        };
     }
 
     protected void on() {

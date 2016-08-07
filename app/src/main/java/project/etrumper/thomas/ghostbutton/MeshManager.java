@@ -47,7 +47,7 @@ public class MeshManager {
             // Check to see if library is already registered
             for (Library libraryObj : MeshManager.libraries) {
                 if (libraryObj.libraryName.equals(library)) {
-                    LOGE(String.format("Library %s already found in registry", library));
+                    //LOGE(String.format("Library %s already found in registry", library));
                     return;
                 }
             }
@@ -64,7 +64,7 @@ public class MeshManager {
             // Check to see if library object is already registered
             for (Library libraryObj : MeshManager.libraries) {
                 if (libraryObj.libraryName.equals(library)) {
-                    LOGE(String.format("Library object %s already found in registry", objectName));
+                    //LOGE(String.format("Library object %s already found in registry", objectName));
                     return;
                 }
             }
@@ -82,7 +82,7 @@ public class MeshManager {
         Library gotLibrary = getLibraryByObject(objectName);
         // Check if not null
         if (gotLibrary == null) {
-            LOGE(String.format("Object %s | Animation %s could not find library", objectName, animationName));
+            //LOGE(String.format("Object %s | Animation %s could not find library", objectName, animationName));
             return null;
         }
         // Check if library is loading
@@ -101,7 +101,7 @@ public class MeshManager {
         // If return null then animation not found, unload the library and print error
         if (animationIndex == null) {
             gotLibrary.unload();
-            LOGE(String.format("Animation %s.%s not found in library %s", objectName, animationName, gotLibrary.libraryName));
+            //LOGE(String.format("Animation %s.%s not found in library %s", objectName, animationName, gotLibrary.libraryName));
             return null;
         }
         // Else, the animation was found and can return the animation index

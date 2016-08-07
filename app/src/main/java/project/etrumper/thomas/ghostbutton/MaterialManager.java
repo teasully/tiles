@@ -13,6 +13,8 @@ public class MaterialManager{
 
     private static Material saveMaterial;
 
+    static ColorPalette currentPalette, yankeePalette1;
+
     public static void init() {
         materials = new Material[0];
         // Basic colors
@@ -21,18 +23,36 @@ public class MaterialManager{
         newMaterial("White", new float[]{1f, 1f, 1f});
         newMaterial("Pink", new float[]{0.8f, 0f, 0.6f});
         newMaterial("Red", new float[]{0.8f, 0.f, 0.f});
-        newMaterial("Green",  new float[]{0.f, 0.8f, 0.f});
+        newMaterial("Green", new float[]{0.f, 0.8f, 0.f});
         newMaterial("Blue", new float[]{0.f, 0.f, 0.8f});
+        // Palette one
+        yankeePalette1 = new ColorPalette("Yankee Blue Palette", null);
+        yankeePalette1.addColors(
+                newMaterial("Yankee Blue", new float[]{31f / 255f, 32f / 255f, 65f / 255f}),
+                newMaterial("Sandstorm", new float[]{238f / 255f, 198f / 255f, 67f / 255f}),
+                newMaterial("Antiflash White", new float[]{238f / 255f, 240f / 255f, 242f / 255f}),
+                newMaterial("Indigo Dye", new float[]{13f / 255f, 33f / 255f, 161f / 255f}),
+                newMaterial("Pastel Green", new float[]{122f / 255f, 229f / 255f, 130f / 255f})
+        );
+        // Set current palette
+        currentPalette = yankeePalette1;
         // Engine materials
         newMaterial("Letter", "test", new float[]{.9f, 0.5f, 0.9f});
         // Game materials
-        newMaterial("Cube", "test", new float[]{0.6f, 0.1f, 0.f});
-        newMaterial("Wall", new float[]{39f/255f, 33f/255f, 60f/255f});
+        newMaterial("Cube", new float[]{0.6f, 0.1f, 0.f});
+        newMaterial("Wall", new float[]{39f / 255f, 33f / 255f, 60f / 255f});
         newMaterial("Button", new float[]{0f, 0f, 0f}, 0.5f);
         newMaterial("Arrow", new float[]{0f, 0f, 0f}, 0.5f);
     }
 
+    public static Vector3f getColorPalette(int index){
+        return currentPalette.getColor(index);
+    }
+
     public static void changeMaterialColor(String matName, Vector3f color) { // // TODO: 5/26/2016 change swordColor to global
+        if(materials == null || materials.length == 0){
+            init();
+        }
         if (!isMaterial(matName)) {
             // Create new material if does not exist
             getMaterial(matName);
@@ -44,7 +64,7 @@ public class MaterialManager{
         String programName = materials[index].programName;
         float opacity = materials[index].opacity;
 
-        materials[index] = new Material(matName, programName, new LightProperties(color.vector, color.vector, color.vector), 0.f, opacity);
+        materials[index] = new Material(matName, programName, new LightProperties(color.vector, color.vector, color.vector), GameConstants.defaultShininess, opacity);
     }
 
     public static ChessPiece.WeaponColor getColor(String materialName){
@@ -178,12 +198,15 @@ public class MaterialManager{
     }*/
 
     public static Material newMaterial(String name, String programName, float[] color, float opacity){
+        if(materials == null){
+            init();
+        }
         for(Material cmaterial : materials){
             if(cmaterial.name.equals(name)){
                 return cmaterial;
             }
         }
-        Material material = new Material(name, programName, new LightProperties(color, color, color), 0.0f, opacity);
+        Material material = new Material(name, programName, new LightProperties(color, color, color), GameConstants.defaultShininess, opacity);
         Material[] temp = new Material[materials.length + 1];
         System.arraycopy(materials, 0, temp, 0, materials.length);
         temp[materials.length] = material;

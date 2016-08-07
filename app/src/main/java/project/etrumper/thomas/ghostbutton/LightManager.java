@@ -37,9 +37,9 @@ public class LightManager{
             if(currentLight != null){
                 count++;
                 int offset = i * 9;
-                result[offset + 0] = currentLight.position[0];
-                result[offset + 1] = currentLight.position[1];
-                result[offset + 2] = currentLight.position[2];
+                result[offset + 0] = currentLight.getPosition()[0];
+                result[offset + 1] = currentLight.getPosition()[1];
+                result[offset + 2] = currentLight.getPosition()[2];
 
                 result[offset + 3] = currentLight.lightProperties.diffuse[0];
                 result[offset + 4] = currentLight.lightProperties.diffuse[1];

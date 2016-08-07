@@ -121,13 +121,31 @@ public class Tile3D extends Logable{
     }
 
     public boolean hasSolid(){
+        // Get block and check if canCollide
+        Block block = this.getBlock();
+        if(block == null){
+            return false;
+        }
+        return block.canCollide();
+    }
+
+    public Block getBlock() {
         // Check for specific cases with walls
-        for(EntityTile3D child : this.children){
-            if(child.TAG.equals("Scenery1")){
-                return true;
+        for (EntityTile3D child : this.children) {
+            if (child.TAG.equals("Scenery1")) {
+                return (Block) child;
             }
         }
-        return false;
+        return null;
+    }
+
+    public Avatar3D getPlayer(){
+        for (EntityTile3D child : this.children) {
+            if (child.TAG.equals("Player")) {
+                return (Avatar3D) child;
+            }
+        }
+        return null;
     }
 
     public boolean empty(){

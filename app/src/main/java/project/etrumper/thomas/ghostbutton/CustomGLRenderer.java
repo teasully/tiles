@@ -2,6 +2,7 @@ package project.etrumper.thomas.ghostbutton;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -20,7 +21,7 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Set clear color (BLACK)
-        GLES20.glClearColor(0.f, 0.f, 0.f, 1.f);
+        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1.f);
         // Enable depth detection
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         // Don't draw faces hidden behind others
@@ -30,6 +31,8 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         // Load programs via ProgramManager
         ProgramManager.init();
+
+        //SuperManager.self.execute();
     }
 
     @Override
@@ -42,30 +45,25 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         // Update game elements via SuperManager
         SuperManager.update();
-        // If time to draw
-        if(SuperManager.shouldDrawF()) {
+        // Draw tile map
+        {
             // Clear buffers
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            // Draw SuperManager drawElements
-            if(SuperManager.drawElements != null) {
-                for (BasicEntity entity : SuperManager.drawElements) {
-                    entity.draw();
-                }
-            }
             // Draw 3DTileMap
-            if(GameConstants.tileMap3D != null){
+            if (GameConstants.tileMap3D != null) {
                 GameConstants.tileMap3D.draw();
             }
             // Finish; draw the screen
             GLES20.glFlush();
-
-
+        }
+        // Draw overlay
+        {
             // Save camera defaults
             float[] savePos = GameConstants.camera.position,
                     saveTarget = GameConstants.camera.target,
                     savedUp = GameConstants.camera.upVector;
             // Move camera to origin
-            GameConstants.camera.position = new float[]{0f,0f,0f};
+            GameConstants.camera.position = new float[]{0f, 0f, 0f};
             GameConstants.camera.target = new float[]{0f, 0f, 1f};
             GameConstants.camera.upVector = new float[]{0f, 1f, 0f};
             // Update with new info

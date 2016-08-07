@@ -14,12 +14,11 @@ public class Camera extends BasicEntity {
     long shakeTimer;
 
     Ease2 targetX, targetY, targetZ,
-            upVectorX, upVectorY, upVectorZ;
+            upVectorX, upVectorY, upVectorZ,
+            posX, posY, posZ;
 
     Camera() {
         super("Camera");
-
-        this.addEase(EaseType.QUADRATIC);
 
         this.targetX = null;
         this.targetY = null;
@@ -27,6 +26,9 @@ public class Camera extends BasicEntity {
         this.upVectorX = null;
         this.upVectorY = null;
         this.upVectorZ = null;
+        this.posX = null;
+        this.posY = null;
+        this.posZ = null;
 
         viewMatrix = new float[16];
         this.offset = new float[3];
@@ -36,9 +38,6 @@ public class Camera extends BasicEntity {
 
         rotation = new float[]{0f, 0f, 0f};
         position = new float[]{0f, 0f, 0f};
-
-        positionalVelocity = 0.25f;
-        anglarVelocity = 40.0f;
     }
 
     float[] target = new float[]{0, 0, 0},
@@ -62,21 +61,21 @@ public class Camera extends BasicEntity {
         // Check target easing for each axis
         if (this.targetX != null) {
             this.targetX.update();
-            this.target[0] = this.targetX.easeQuadradic();
+            this.target[0] = (float)this.targetX.easeLinear();
             if (this.targetX.done()) {
                 this.targetX = null;
             }
         }
         if (this.targetY != null) {
             this.targetY.update();
-            this.target[1] = this.targetY.easeQuadradic();
+            this.target[1] = (float)this.targetY.easeLinear();
             if (this.targetY.done()) {
                 this.targetY = null;
             }
         }
         if (this.targetZ != null) {
             this.targetZ.update();
-            this.target[2] = this.targetZ.easeQuadradic();
+            this.target[2] = (float)this.targetZ.easeLinear();
             if (this.targetZ.done()) {
                 this.targetZ = null;
             }
@@ -84,23 +83,45 @@ public class Camera extends BasicEntity {
         // Check up vector easing
         if (this.upVectorX != null) {
             this.upVectorX.update();
-            this.upVector[0] = this.upVectorX.easeQuadradic();
+            this.upVector[0] = (float)this.upVectorX.easeLinear();
             if (this.upVectorX.done()) {
                 this.upVectorX = null;
             }
         }
         if (this.upVectorY != null) {
             this.upVectorY.update();
-            this.upVector[1] = this.upVectorY.easeQuadradic();
+            this.upVector[1] = (float)this.upVectorY.easeLinear();
             if (this.upVectorY.done()) {
                 this.upVectorY = null;
             }
         }
         if (this.upVectorZ != null) {
             this.upVectorZ.update();
-            this.upVector[2] = this.upVectorZ.easeQuadradic();
+            this.upVector[2] = (float)this.upVectorZ.easeLinear();
             if (this.upVectorZ.done()) {
                 this.upVectorZ = null;
+            }
+        }
+        // Update position
+        if (this.posX != null) {
+            this.posX.update();
+            this.position[0] = (float)this.posX.easeLinear();
+            if (this.posX.done()) {
+                this.posX = null;
+            }
+        }
+        if (this.posY != null) {
+            this.posY.update();
+            this.position[1] = (float)this.posY.easeLinear();
+            if (this.posY.done()) {
+                this.posY = null;
+            }
+        }
+        if (this.posZ != null) {
+            this.posZ.update();
+            this.position[2] = (float)this.posZ.easeLinear();
+            if (this.posZ.done()) {
+                this.posZ = null;
             }
         }
     }
@@ -119,15 +140,30 @@ public class Camera extends BasicEntity {
     }
 
     public void easeTargetTo(float[] pos, long timeInMilli) {
+        if(this.targetX != null){
+            return;
+        }
         this.targetX = Ease2.getEase2(this.target[0], pos[0], timeInMilli);
         this.targetY = Ease2.getEase2(this.target[1], pos[1], timeInMilli);
         this.targetZ = Ease2.getEase2(this.target[2], pos[2], timeInMilli);
     }
 
     public void easeUpVectorTo(float[] pos, long timeInMilli) {
+        if(this.upVectorX != null){
+            return;
+        }
         this.upVectorX = Ease2.getEase2(this.upVector[0], pos[0], timeInMilli);
         this.upVectorY = Ease2.getEase2(this.upVector[1], pos[1], timeInMilli);
         this.upVectorZ = Ease2.getEase2(this.upVector[2], pos[2], timeInMilli);
+    }
+
+    public void easePositionTo(float[] pos, long timeInMilli) {
+        if(this.posX != null){
+            return;
+        }
+        this.posX = Ease2.getEase2(this.position[0], pos[0], timeInMilli);
+        this.posY = Ease2.getEase2(this.position[1], pos[1], timeInMilli);
+        this.posZ = Ease2.getEase2(this.position[2], pos[2], timeInMilli);
     }
 
     protected void startShake(long time) {

@@ -56,29 +56,30 @@ public class BasicEntity extends Logable {
         // Update ease
         if (this.ease != null) {
             this.ease.update(new float[]{SuperManager.deltaTime * deltaTimeModifier});
-            float[] positionalVelocity = ease.getData(new float[]{this.position[0], this.position[1], this.position[2], 0}),
+            float[] positionalVelocity = ease.getData(new float[]{this.position[0], this.position[1], this.position[2], 0});/*/,
                     angularVelocity = ease.getData(new float[]{this.rotation[0], this.rotation[1], this.rotation[2], 1}),
-                    scalingVelocity = ease.getData(new float[]{this.scale[0], this.scale[1], this.scale[2], 2});
-            this.velocity = new float[]{positionalVelocity[0], positionalVelocity[1], positionalVelocity[2],
+                    scalingVelocity = ease.getData(new float[]{this.scale[0], this.scale[1], this.scale[2], 2});*/
+            this.velocity = new float[]{positionalVelocity[0], positionalVelocity[1], positionalVelocity[2]};/*/,
                     angularVelocity[0], angularVelocity[1], angularVelocity[2],
-                    scalingVelocity[0], scalingVelocity[1], scalingVelocity[2]};
+                    scalingVelocity[0], scalingVelocity[1], scalingVelocity[2]};*/
         }
         // Update tilePosition | rotation | scale with velocity data
         if (this.velocity[0] != 0 || this.velocity[1] != 0 || this.velocity[2] != 0) {
             movePosition(new float[]{this.velocity[0], this.velocity[1], this.velocity[2]});
         }
-        if (this.velocity[3] != 0 || this.velocity[4] != 0 || this.velocity[5] != 0) {
+        /*if (this.velocity[3] != 0 || this.velocity[4] != 0 || this.velocity[5] != 0) {
             moveRotation(new float[]{this.velocity[3], this.velocity[4], this.velocity[5]});
         }
         if (this.velocity[6] != 0 || this.velocity[7] != 0 || this.velocity[8] != 0) {
             moveScale(new float[]{this.velocity[6], this.velocity[7], this.velocity[8]});
-        }
-        // Fix rotation so it does not go above 360 or under 0 just for numbers' sake
+        }*/
+        /*/ Fix rotation so it does not go above 360 or under 0 just for numbers' sake
         for (int i = 0; i < 3; i++) {
             if (rotation[i] >= 360f || rotation[i] < 0f) {
                 rotation[i] %= 360;
             }
         }
+        */
     }
 
     protected void changeDeltaTimeModifier(float newModifier) {
@@ -123,9 +124,6 @@ public class BasicEntity extends Logable {
         }
         int gotID = this.currentAnimation.getcurrentFrame();
         this.model.meshID = gotID;
-        if (gotID == -1) {
-            //LOGE("updateMesh got -1");
-        }
     }
 
     protected void play() {
@@ -169,18 +167,6 @@ public class BasicEntity extends Logable {
         this.queuedModels = newQueue;
     }*/
 
-    protected void addDrawElement() {
-        SuperManager.addDrawElement(this);
-    }
-
-    protected void removeDrawElement() {
-        try {
-            SuperManager.removeDrawElement(this);
-        } catch (MandatoryException e) {
-            LOGE(e.toString());
-        }
-    }
-
     /*protected RawModel getRawModel(int index){
         if(index > this.attributes.length - 1){
             return null;
@@ -190,20 +176,6 @@ public class BasicEntity extends Logable {
         }
         return (RawModel)this.attributes[index];
     }*/
-
-    protected void setPosition(float[] position) {
-        if (position.length != 3) {
-            LOGE("Trying to setPosition with tilePosition[] of invalid length");
-        } else {
-            for (int i = 0; i < 3; i++) {
-                if (Float.isNaN(position[i])) {
-                    LOGE(String.format("Trying to movePosition tilePosition index %d to NaN", i));
-                } else {
-                    this.position[i] = position[i];
-                }
-            }
-        }
-    }
 
     protected void movePosition(float[] offset) {
         if (offset.length != 3) {
@@ -217,95 +189,12 @@ public class BasicEntity extends Logable {
                 }
             }
         }
-        //LOGE(String.format("Position moved by %f, %f, %f", offset[0], offset[1], offset[2]));
-    }
-
-    protected void setRotation(float[] rotation) {
-        if (rotation.length != 3) {
-            LOGE("Trying to setRotation() with invalid rotation[] length");
-        } else {
-            for (int i = 0; i < 3; i++) {
-                if (Float.isNaN(rotation[i])) {
-                    LOGE(String.format("Trying to movePosition rotation index %d to NaN", i));
-                } else {
-                    this.rotation[i] = rotation[i];
-                }
-            }
-        }
-    }
-
-    protected void moveRotation(float[] offset) {
-        if (offset.length != 3) {
-            LOGE("Trying to moveRotation() with invalid offset[] length");
-        } else {
-            for (int i = 0; i < 3; i++) {
-                if (Float.isNaN(offset[i])) {
-                    LOGE(String.format("Trying to moveRotation index %d by NaN", i));
-                } else {
-                    this.rotation[i] += offset[i];
-                }
-            }
-        }
-    }
-
-    protected void setScale(float[] scale) {
-        if (rotation.length != 3) {
-            LOGE("Trying to setScale() with invalid rotation[] length");
-        } else {
-            for (int i = 0; i < 3; i++) {
-                if (Float.isNaN(scale[i])) {
-                    LOGE(String.format("Trying to moveScale index %d to NaN", i));
-                } else {
-                    this.scale[i] = scale[i];
-                }
-            }
-        }
-    }
-
-    protected void moveScale(float[] offset) {
-        if (offset.length != 3) {
-            LOGE("Trying to moveScale() with invalid offset[] length");
-        } else {
-            for (int i = 0; i < 3; i++) {
-                if (Float.isNaN(offset[i])) {
-                    LOGE(String.format("Trying to movePosition roation index %d by NaN", i));
-                } else {
-                    this.scale[i] += offset[i];
-                }
-            }
-        }
     }
 
     protected void draw() {
-        /*if(this.visible) {
-            for(Attribute attribute : this.attributes) {
-                if (attribute != null) {
-                    if (attribute.attributeType == AttributeType.RAWMODEL) {
-                        RawModel model = (RawModel) attribute;
-                        if (model.visible) {
-                            model.draw(this.tilePosition, this.rotation, this.scale);
-                        }
-                    }
-                }
-            }
-        }*/
         if (this.visible && this.currentAnimation != null) {
             this.currentAnimation.draw(this, this.model);
-            //return;
         }
-        //LOGE("Null current anim");
-    }
-
-    protected float[] getPosition() {
-        return this.position;
-    }
-
-    protected float[] getRotation() {
-        return this.rotation;
-    }
-
-    protected float[] getScale() {
-        return this.scale;
     }
 
     /*protected float[] getModelMatrix(){
@@ -330,11 +219,6 @@ public class BasicEntity extends Logable {
         }
         return model.getModelMatrixWithGlobal(this.tilePosition, this.rotation, this.scale);
     }*/
-
-    protected void addEase(EaseType type) {
-        this.ease = new Ease();
-        this.ease.easeType = type;
-    }
 
     protected void startEase(float[] destination, long timeInMilli, int mode) {
         Ease.startEase(destination, this, timeInMilli, mode);

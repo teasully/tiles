@@ -80,6 +80,9 @@ public class RawModel extends Attribute {
                     1, mat.lightProperties.ambient, 0);
             GLES20.glUniform3fv(GLES20.glGetUniformLocation(programID, "mDiffuse"),
                     1, mat.lightProperties.diffuse, 0);
+            GLES20.glUniform3fv(GLES20.glGetUniformLocation(programID, "mSpecular"),
+                    1, mat.lightProperties.specular, 0);
+            GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "shininess"), mat.shininess);
             GLES20.glUniform1f(GLES20.glGetUniformLocation(programID, "opacity"), mat.opacity);
 
             /*float x = 0f, y = 0f;

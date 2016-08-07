@@ -21,4 +21,8 @@ public class BenchmarkTimer {
         Log.e(tag+".btimer", String.format("%f", (System.currentTimeMillis() - t) * 1f));
     }
 
+    public void end(){
+        Log.e("Unnammed Benchmark", String.format("%f", (System.currentTimeMillis() - t) * 1f));
+    }
+
 }

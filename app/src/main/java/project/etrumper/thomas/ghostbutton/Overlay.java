@@ -53,9 +53,13 @@ public class Overlay {
         // Go back to last screen
         @Override
         protected void tapped1(PieceDirection direction) {
+            // Save options
+            GameConstants.saveGame();
+            // Return to last screen
             if (direction == null) {
                 changeScreen(lastScreen);
             }
+
         }
         // Return selection data
         @Override

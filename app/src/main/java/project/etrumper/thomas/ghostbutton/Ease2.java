@@ -48,15 +48,15 @@ public class Ease2 extends Logable{
         return (this.currentTimeInMilli >= this.lengthInMilli);
     }
 
-    public float easeLinear() {
-        return this.desiredChangeValue * this.currentTimeInMilli / this.lengthInMilli + this.beginningValue;
+    public double easeLinear() {
+        return this.desiredChangeValue * (this.currentTimeInMilli / 1000f) / (this.lengthInMilli / 1000f) + this.beginningValue;
     }
 
-    public float easeQuadradic() {
+    public double easeQuadradic() {
         return this.easeQuadradic(this.currentTimeInMilli, this.beginningValue, this.desiredChangeValue, this.lengthInMilli);
     }
 
-    private float easeQuadradic(float t, float b, float c, float d) {
+    private double easeQuadradic(double t, double b, double c, double d) {
         t /= d / 2f;
         if (t < 1f) {
             return c / 2f * t * t + b;

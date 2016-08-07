@@ -10,13 +10,13 @@ public class GravityAxis extends Logable {
     private long elapsedTime,
             totalLength;
 
-    float startPos,
+    double startPos,
             velocity;
 
-    float gravity = -10f;
-    static float dtModifier = 2f;
+    double gravity = -10d;
+    static double dtModifier = 2d;
 
-    GravityAxis(float startPos, float velocity, long length) {
+    GravityAxis(double startPos, double velocity, long length) {
         super("GravityAxis");
         this.elapsedTime = 0;
         this.totalLength = length;
@@ -31,12 +31,12 @@ public class GravityAxis extends Logable {
         }
     }
 
-    public float getPosition() {
+    public double getPosition() {
         return this.startPos + calculateGravity();
     }
 
-    private float calculateGravity(){
-        return (((gravity * (elapsedTime / 1000f * elapsedTime / 1000f)) / 2f) + (velocity * elapsedTime / 1000f));
+    private double calculateGravity(){
+        return (((gravity * (elapsedTime / 1000d * elapsedTime / 1000d)) / 2d) + (velocity * elapsedTime / 1000d));
     }
 
     public boolean done() {
