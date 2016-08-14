@@ -56,6 +56,10 @@ public class Animation {
         }
     }
 
+    public void calculateFrameTime(long desiredTotalLength){
+        this.frameTime = (desiredTotalLength / this.animationIndex.length);
+    }
+
     protected float[] update() {
         if(!this.loaded){
             this.animationIndex = MeshManager.getAnimationIndex(this.getObjectName(), this.getAnimationName());

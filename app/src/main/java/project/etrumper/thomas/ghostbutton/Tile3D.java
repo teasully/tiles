@@ -120,20 +120,36 @@ public class Tile3D extends Logable{
         return true;
     }
 
-    public boolean hasSolid(){
+    public boolean hasEntity(){
+        return(this.children.length > 0);
+    }
+
+    public boolean hasBlock(){
         // Get block and check if canCollide
         Block block = this.getBlock();
-        if(block == null){
-            return false;
-        }
-        return block.canCollide();
+        return(block != null && block.canCollide);
     }
 
     public Block getBlock() {
-        // Check for specific cases with walls
+        // Check for type
         for (EntityTile3D child : this.children) {
-            if (child.TAG.equals("Scenery1")) {
+            if (child.type == EntityTile3D.EntityType.BLOCK) {
                 return (Block) child;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasItem(){
+        Item item = this.getItem();
+        return(item != null);
+    }
+
+    public Item getItem(){
+        // Check for type
+        for (EntityTile3D child : this.children) {
+            if (child.type == EntityTile3D.EntityType.ITEM) {
+                return (Item) child;
             }
         }
         return null;
@@ -146,6 +162,10 @@ public class Tile3D extends Logable{
             }
         }
         return null;
+    }
+
+    public boolean hasPlayer(){
+        return(this.getPlayer() != null);
     }
 
     public boolean empty(){
@@ -164,32 +184,44 @@ public class Tile3D extends Logable{
         return false;
     }
 
+    public boolean isChild(String TAG){
+        // Loop through children
+        for(EntityTile3D child : this.children){
+            // Check against TAGs
+            if(child.TAG.equals(TAG)){
+                return true;
+            }
+        }
+        // Did not find match
+        return false;
+    }
+
     public Tile3D north(){
-        return GameConstants.tileMap3D.getNorthTile(this.tilePosition);
+        return GameConstants.getMap().getNorthTile(this.tilePosition);
     }
 
     public Tile3D south(){
-        return GameConstants.tileMap3D.getSouthTile(this.tilePosition);
+        return GameConstants.getMap().getSouthTile(this.tilePosition);
     }
 
     public Tile3D west(){
-        return GameConstants.tileMap3D.getWestTile(this.tilePosition);
+        return GameConstants.getMap().getWestTile(this.tilePosition);
     }
 
     public Tile3D east(){
-        return GameConstants.tileMap3D.getEastTile(this.tilePosition);
+        return GameConstants.getMap().getEastTile(this.tilePosition);
     }
 
     public Tile3D top(){
-        return GameConstants.tileMap3D.getTopTile(this.tilePosition);
+        return GameConstants.getMap().getTopTile(this.tilePosition);
     }
 
     public Tile3D directional(Avatar3D.Direction direction){
-        return GameConstants.tileMap3D.getTileByDirection(this.tilePosition, direction);
+        return GameConstants.getMap().getTileByDirection(this.tilePosition, direction);
     }
 
     public Tile3D bottom(){
-        return GameConstants.tileMap3D.getBottomTile(this.tilePosition);
+        return GameConstants.getMap().getBottomTile(this.tilePosition);
     }
 
 }

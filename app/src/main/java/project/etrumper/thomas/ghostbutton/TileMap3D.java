@@ -1,6 +1,13 @@
 package project.etrumper.thomas.ghostbutton;
 
+import android.util.Base64;
+import android.util.Base64OutputStream;
 import android.util.Log;
+
+import java.io.IOError;
+import java.io.IOException;
+
+import javax.xml.datatype.DatatypeFactory;
 
 /**
  * Created by thoma on 7/18/2016.
@@ -10,6 +17,8 @@ public class TileMap3D {
     Tile3D[][][] tiles;
 
     Vector3i dimensions;
+
+    String name;
 
     TileMap3D(String[] ... layers) {
         /*
@@ -24,6 +33,10 @@ public class TileMap3D {
         }
     }
 
+    TileMap3D(String ... data){
+        this.load3DMap(data);
+    }
+
     public void inputHandler(String input) {
         for (Tile3D[][] a : this.tiles) {
             for (Tile3D[] b : a) {
@@ -35,7 +48,7 @@ public class TileMap3D {
         }
     }
 
-    public void draw() {
+    protected void draw() {
         // Iterate through tiles
         for (Tile3D[][] a : this.tiles) {
             for (Tile3D[] b : a) {
@@ -46,12 +59,73 @@ public class TileMap3D {
         }
     }
 
+    public String toBase64(){
+        // Get string builder to hold data and start with size
+        StringBuilder sb = new StringBuilder("");
+        sb.append(this.name);
+        sb.append("\n");
+        sb.append(dimensions.x());
+        sb.append("\n");
+        sb.append(dimensions.y());
+        sb.append("\n");
+        sb.append(dimensions.z());
+        sb.append("\n");
+        // Iterate through tiles
+        for (Tile3D[][] a : this.tiles) {
+            for (Tile3D[] b : a) {
+                for (Tile3D tile3D : b) {
+                    // Check if tile has anything
+                    if(tile3D.children.length > 0){
+                        // Iterate through children
+                        for(EntityTile3D child : tile3D.children){
+                            // Save each child
+                            String extra = "";
+                            if(child.directional){
+                                if(child.entityDirection == EntityTile3D.Direction.NORTH){
+                                    extra = "N";
+                                }else if(child.entityDirection == EntityTile3D.Direction.SOUTH){
+                                    extra = "S";
+                                }else if(child.entityDirection == EntityTile3D.Direction.WEST){
+                                    extra = "W";
+                                }else{
+                                    extra = "E";
+                                }
+                            }
+                            //// ID x y z extra
+                            sb.append(String.format("%d %d %d %d %s\n", child.ID, child.tilePosition.x(), child.tilePosition.y(), child.tilePosition.z(), extra));
+                        }
+                    }
+                }
+            }
+        }
+        // Return the contents encoded as Base64
+        String temp = null;
+        try {
+            temp = Base64.encodeToString(sb.toString().getBytes("UTF-8"), Base64.DEFAULT);
+        }catch(IOException e){
+            LOGE(e.toString());
+        }
+        return temp;
+    }
+
     public void update(){
         // Iterate through tiles
         for(Tile3D[][] a : this.tiles) {
             for (Tile3D[] b : a) {
                 for (Tile3D tile3D : b) {
                     tile3D.update();
+                }
+            }
+        }
+    }
+
+    public void setEmpty(){
+        // Iterate through tiles
+        for(int x = 0; x < this.tiles.length; x++){
+            for(int y = 0; y < this.tiles[0].length; y++){
+                for(int z = 0; z < this.tiles[0][0].length; z++){
+                    this.tiles[x][y][z] = new Tile3D();
+                    this.tiles[x][y][z].tilePosition = new Vector3i(x, y, z);
                 }
             }
         }
@@ -76,13 +150,27 @@ public class TileMap3D {
         Tile3D temp = this.getTile(entity.tilePosition);
         // Check if resides in tile
         if(temp.isChild(entity)){
-           return temp;
+            return temp;
         }
         // Else search manually
         for(Tile3D[][] a : this.tiles) {
             for (Tile3D[] b : a) {
                 for (Tile3D tile3D : b) {
                     if (tile3D.isChild(entity)) {
+                        return tile3D;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public Tile3D getTile(String TAG){
+        // Search manually
+        for(Tile3D[][] a : this.tiles) {
+            for (Tile3D[] b : a) {
+                for (Tile3D tile3D : b) {
+                    if (tile3D.isChild(TAG)) {
                         return tile3D;
                     }
                 }
@@ -183,6 +271,77 @@ public class TileMap3D {
             }
         }
         return temp;
+    }
+
+    private void load3DMap(String ... data){
+        // Error check parameters
+        if(data == null || data.length < 4){
+            LOGE("Invalid data to load3DMap()");
+            return;
+        }
+        // First data is map name
+        this.name = data[0];
+        // Next three datum is map size
+        int x = Integer.parseInt(data[1]),
+                y = Integer.parseInt(data[2]),
+                z = Integer.parseInt(data[3]);
+        // Initiate map with dimensions
+        this.tiles = new Tile3D[x][y][z];
+        this.dimensions = new Vector3i(x, y, z);
+        this.setEmpty();
+        // Load objects into map
+        //// ID x y z
+        for(int i = 4; i < data.length; i++){
+            // Parse data
+            String[] datum = data[i].split(" ");
+            int ID = Integer.parseInt(datum[0]),
+                    x1 = Integer.parseInt(datum[1]),
+                    y1 = Integer.parseInt(datum[2]),
+                    z1 = Integer.parseInt(datum[3]);
+            // Get object from ObjectManager
+            EntityTile3D object = ObjectManager.getObject(ID, x1, y1, z1);
+            // Check other modifiers
+            if(datum.length > 4){
+                for(int u = 4; u < datum.length; u++){
+                    switch (datum[u]){
+                        case("N"):
+                            object.resolveRoatationTo(EntityTile3D.Direction.NORTH);
+                            object.spawnDirection = EntityTile3D.Direction.NORTH;
+                            break;
+                        case("S"):
+                            object.resolveRoatationTo(EntityTile3D.Direction.SOUTH);
+                            object.spawnDirection = EntityTile3D.Direction.SOUTH;
+                            break;
+                        case("W"):
+                            object.resolveRoatationTo(EntityTile3D.Direction.WEST);
+                            object.spawnDirection = EntityTile3D.Direction.WEST;
+                            break;
+                        case("E"):
+                            object.resolveRoatationTo(EntityTile3D.Direction.EAST);
+                            object.spawnDirection = EntityTile3D.Direction.EAST;
+                            break;
+                        default:
+                            LOGE("Trying to handle extra data " + datum[u]);
+                            break;
+                    }
+                }
+            }
+            // Check if in edit mode
+            if(GameConstants.editor.mode != Editor.EditorMode.TESTING) {
+                object.disabled = true;
+                if (ID == 1) {
+                    GameConstants.editor.placedPlayer();
+                }
+            }
+            if(GameConstants.editor.mode == Editor.EditorMode.SOLVING){
+                object.placedByUser = false;
+            }
+            if(object == null){
+                continue;
+            }
+            // Add to tilemap
+            this.tiles[x1][y1][z1].addEntity(object);
+        }
     }
 
     private void load3DMap(String[] ... layers) {

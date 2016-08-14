@@ -155,38 +155,92 @@ public class TextMenu extends ChessPiece {
     }
 
     protected void tapped0(PieceDirection direction){
+        if(direction == null){
+            this.tapped0();
+        }
+    }
+
+    protected void tapped0(){
 
     }
 
     protected void tapped1(PieceDirection direction){
+        if(direction == null){
+            this.tapped1();
+        }
+    }
+
+    protected void tapped1(){
 
     }
 
     protected void tapped2(PieceDirection direction){
+        if(direction == null){
+            this.tapped2();
+        }
+    }
+
+    protected void tapped2(){
 
     }
 
     protected void tapped3(PieceDirection direction){
+        if(direction == null){
+            this.tapped3();
+        }
+    }
+
+    protected void tapped3(){
 
     }
 
     protected void tapped4(PieceDirection direction){
+        if(direction == null){
+            this.tapped4();
+        }
+    }
+
+    protected void tapped4(){
 
     }
 
     protected void tapped5(PieceDirection direction){
+        if(direction == null){
+            this.tapped5();
+        }
+    }
+
+    protected void tapped5(){
 
     }
 
     protected void tapped6(PieceDirection direction){
+        if(direction == null){
+            this.tapped6();
+        }
+    }
+
+    protected void tapped6(){
 
     }
 
     protected void tapped7(PieceDirection direction){
+        if(direction == null){
+            this.tapped7();
+        }
+    }
+
+    protected void tapped7(){
 
     }
 
     protected void tapped8(PieceDirection direction){
+        if(direction == null){
+            this.tapped8();
+        }
+    }
+
+    protected void tapped8(){
 
     }
 

@@ -45,14 +45,14 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         // Update game elements via SuperManager
         SuperManager.update();
+        // Update editor
+        GameConstants.editor.update();
         // Draw tile map
         {
             // Clear buffers
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-            // Draw 3DTileMap
-            if (GameConstants.tileMap3D != null) {
-                GameConstants.tileMap3D.draw();
-            }
+            // Draw TileMap
+            GameConstants.editor.drawMap();
             // Finish; draw the screen
             GLES20.glFlush();
         }
@@ -72,6 +72,10 @@ public class CustomGLRenderer implements GLSurfaceView.Renderer {
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
             // Draw the overlay
             Overlay.draw();
+            // Draw editor
+            if(GameConstants.editor.mode != null){
+                GameConstants.editor.drawUI();
+            }
             // Finish; draw the screen
             GLES20.glFlush();
             // Revert camera

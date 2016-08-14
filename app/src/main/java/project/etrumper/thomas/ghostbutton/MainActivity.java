@@ -25,9 +25,13 @@ public class MainActivity extends Activity {
 
     GLSurfaceView surfaceView;
 
+    static MainActivity activity;
+
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        activity = this;
 
         new SuperManager(getApplicationContext());
 

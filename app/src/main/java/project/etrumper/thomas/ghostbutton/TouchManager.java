@@ -1,5 +1,6 @@
 package project.etrumper.thomas.ghostbutton;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 
@@ -25,6 +26,8 @@ public class TouchManager{
 
     static int holdDOWNID = 0;
 
+    static float rDX, lX, rDY, lY;
+
     static public boolean handleTouch(MotionEvent e) {
         // Gather pointer data
         x = e.getX();
@@ -41,33 +44,37 @@ public class TouchManager{
                 onUp(e);
                 break;
             case MotionEvent.ACTION_MOVE:
+                rDX = x - lX;
+                lX = x;
+                rDY = y - lY;
+                lY = y;
                 if(holdDOWNID == DOWNID){
-                    return true;
+                    break;
                 }
                 dx = x - mPreviousX;
                 dy = y - mPreviousY;
                 final float MINDISTANCE = 20f;
                 if(Math.abs(dx) < MINDISTANCE && Math.abs(dy) < MINDISTANCE){
                     // Held
-                    return true;
+                    break;
                 }
                 holdDOWNID = DOWNID;
                 //performed = true;
                 if(Math.abs(dx) > Math.abs(dy)){
                     if(dx > 0){
                         GameConstants.controller.direction = ChessPiece.PieceDirection.RIGHT;
-                        return true;
+                        break;
                     }else{
                         GameConstants.controller.direction = ChessPiece.PieceDirection.LEFT;
-                        return true;
+                        break;
                     }
                 }
                 if(dy > 0){
                     GameConstants.controller.direction = ChessPiece.PieceDirection.DOWN;
-                    return true;
+                    break;
                 }
                 GameConstants.controller.direction = ChessPiece.PieceDirection.UP;
-                return true;
+                break;
         }
         return true;
     }
@@ -86,6 +93,8 @@ public class TouchManager{
         if (!lastDown) {
             lastDown = true;
             GameConstants.controller.justPressed = true;
+            lX = mPreviousX;
+            lY = mPreviousY;
         }
     }
 

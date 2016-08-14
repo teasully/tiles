@@ -28,7 +28,7 @@ public class SoundManager{
     public static int load(int rawSoundID){
         for(Sound sound : sounds){
             if(sound != null && sound.rawSoundID == rawSoundID){
-                print("Loading already loaded sound");
+                //print("Loading already loaded sound");
                 return sound.soundID;
             }
         }

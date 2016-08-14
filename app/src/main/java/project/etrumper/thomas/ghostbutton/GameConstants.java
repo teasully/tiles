@@ -1,6 +1,7 @@
 package project.etrumper.thomas.ghostbutton;
 
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 
 import java.security.acl.LastOwnerException;
 
@@ -13,8 +14,8 @@ public class GameConstants {
     static int Number_Colors = 1;    // Difficulty
     static float ambiance = 1f; // Amount of light (or RGB for more specific)
 
-    // Other
     static Camera camera;
+    static Editor editor;
     static float menuCameraZoom = 12f,
         defaultShininess = 1f;
 
@@ -24,36 +25,19 @@ public class GameConstants {
 
     static TileMap3D tileMap3D;
 
-    static Ease2 frameRateEase = null;
-
     static long frameRate = 60;
-
-    public static void easeFrameRateTo(long desiredFrameRate, long lengthOfEase) {
-        // Make new ease2
-        frameRateEase = Ease2.getEase2(frameRate, desiredFrameRate, lengthOfEase);
-    }
 
     public static void init(){
         controller = new Controller();
+        // Init editor
+        GameConstants.editor = new Editor(null);
+        // Init overlay
+        Overlay.init();
         // Load config
         loadGame();
     }
 
     public static void update() {
-        /*/ Check if easing
-        if (frameRateEase != null) {
-            // Update frame rate
-            frameRate = (long) frameRateEase.easeQuadradic();
-            tileMap.changeFramerate(frameRate);
-            frameRateEase.update();
-            // Check if ease is done
-            if (frameRateEase.done()) {
-                // Fix for frame rate not being precise
-                frameRate = (long) (frameRateEase.beginningValue + frameRateEase.desiredChangeValue);
-                tileMap.changeFramerate(frameRate);
-                frameRateEase = null;
-            }
-        }*/
         // Update controller
         controller.update();
         // Update camera
@@ -67,13 +51,18 @@ public class GameConstants {
     }
 
     public static void saveGame(){
-        String saveData = "";
+        StringBuilder saveData = new StringBuilder("");
         // Save the camera mode
         int cameraMode = Overlay.optionsMenu.getData()[0];
-        saveData = saveData.concat("camera_mode " + cameraMode + "\n");
+        saveData.append(String.format("camera_mode %s", cameraMode));
+        // Save current maps
+        String[] mapsBase64 = editor.getMapsBase64();
+        for(String map : mapsBase64){
+            saveData.append(String.format("&map %s", map));
+        }
         // Save to internal storage
-        Loader.writeToFile(saveData);
-        LOGE("Saved game files");
+        Loader.writeToFile(saveData.toString());
+        //LOGE("Saved game files");
     }
 
     public static void loadGame(){
@@ -83,7 +72,7 @@ public class GameConstants {
             LOGE("No config.txt file to load");
             return;
         }
-        String[] datum = temp.split(System.getProperty("line.separator"));
+        String[] datum = temp.split("&");
         for(String data : datum){
             String[] words = data.split(" ");
             switch (words[0]){
@@ -91,9 +80,23 @@ public class GameConstants {
                     TextSelection ts = (TextSelection) Overlay.optionsMenu.children[0];
                     ts.currentSelection = Integer.parseInt(words[1]);
                     break;
+                case("map"):
+                    editor.addMapBase64(words[1]);
+                    break;
+                default:
+                    LOGE(String.format("Reading un-parsed line of code:\n%s", data));
+                    break;
             }
         }
-        LOGE("Successfully loaded game files");
+        //LOGE("Loaded game files");
+    }
+
+    public static TileMap3D getMap(){
+        // Check editor mode
+        if(GameConstants.editor.mode == Editor.EditorMode.TESTING){
+            return GameConstants.editor.testingMap;
+        }
+        return GameConstants.tileMap3D;
     }
 
     private static void LOGE(String message){

@@ -1,5 +1,8 @@
 package project.etrumper.thomas.ghostbutton;
 
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -13,11 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
-import java.util.Vector;
 
 /**
  * Created by thoma on 2/12/2016.
@@ -140,6 +140,8 @@ public class Loader {
         MeshManager.addMeshes(libraryName, meshes);
     }
 
+    //public String
+
     public static String loadFile(String fileName) {
         InputStream is = null;
         int rID = SuperManager.context.getResources().getIdentifier("project.etrumper.thomas.ghostbutton:raw/" + fileName, null, null);
@@ -203,5 +205,58 @@ public class Loader {
         }
 
         return ret;
+    }
+
+    public static void copy(final String label, final String plaintext){
+        MainActivity.activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Get clipboard service
+                ClipboardManager clipboard = (ClipboardManager)MainActivity.activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                // Add label and plaintext to clipboard
+                ClipData clip = ClipData.newPlainText(label, plaintext);
+                // Set the data on top
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+    }
+
+    volatile static String pasteBuffer;
+
+    public static String paste(){
+        MainActivity.activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Set to null for loop
+                pasteBuffer = null;
+                // Get clipboard service
+                ClipboardManager clipboard = (ClipboardManager) MainActivity.activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                //String pasteData = null;
+                // Check clipboard data
+                if (!(clipboard.hasPrimaryClip())) {
+                    Logable.alertBoxSimple("Error", "Nothing in clipboard", "Wow");
+                    pasteBuffer = "stop";
+                } else if (!(clipboard.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))) {
+                    // Since the clipboard has data but it is not plain text
+                    Logable.alertBoxSimple("Error", "Data in clipboard unreadable", "Uhuh");
+                    pasteBuffer = "stop";
+                } else {
+                    //since the clipboard contains plain text.
+                    ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                    // Gets the clipboard as text.
+                    pasteBuffer = item.getText().toString();
+                }
+            }
+        });
+        while(pasteBuffer == null){
+        }
+        if(pasteBuffer.equals("stop")){
+            Logable.alertBoxSimple("Error", "paste() error code: STOP", "WOW");
+            return null;
+        }else {
+            String temp = pasteBuffer;
+            pasteBuffer = null;
+            return temp;
+        }
     }
 }

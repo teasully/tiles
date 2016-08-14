@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="0.1in">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="test"
+        android:textAlignment="center"
+        android:textSize="0.2in"
+        android:id="@+id/prompt"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0.1in"
+        android:id="@+id/text"
+        android:inputType="text"
+        android:digits=" qwertzuiopasdfghjklyxcvbnm"
+        android:hint="Only letters allowed"
+        android:maxLength="12"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        >
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="negative"
+            android:layout_weight="3"
+            android:id="@+id/negative"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="positive"
+            android:layout_weight="3"
+            android:id="@+id/positive"/>
+    </LinearLayout>
+</LinearLayout>

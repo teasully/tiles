@@ -100,11 +100,26 @@ public class Vector3i extends Logable{
         }
         Vector3i compare = vectors[0];
         for(Vector3i vector3i : vectors){
-            if(compare.x() != vector3i.x() || compare.y()!= vector3i.y() || compare.z() != vector3i.z()){
+            if(!equals(compare, vector3i)){
                 return false;
             }
         }
         return true;
+    }
+
+    public static boolean equals(Vector3i one, Vector3i two){
+        if(one == null || two == null){
+            return false;
+        }
+        if(one.x() != two.x() || one.y() != two.y() || one.z() != two.z()){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString(){
+        return String.format("%d, %d, %d", this.x(), this.y(), this.z());
     }
 
 }

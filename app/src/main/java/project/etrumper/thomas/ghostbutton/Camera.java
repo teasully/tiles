@@ -140,30 +140,27 @@ public class Camera extends BasicEntity {
     }
 
     public void easeTargetTo(float[] pos, long timeInMilli) {
-        if(this.targetX != null){
-            return;
-        }
         this.targetX = Ease2.getEase2(this.target[0], pos[0], timeInMilli);
         this.targetY = Ease2.getEase2(this.target[1], pos[1], timeInMilli);
         this.targetZ = Ease2.getEase2(this.target[2], pos[2], timeInMilli);
     }
 
     public void easeUpVectorTo(float[] pos, long timeInMilli) {
-        if(this.upVectorX != null){
-            return;
-        }
         this.upVectorX = Ease2.getEase2(this.upVector[0], pos[0], timeInMilli);
         this.upVectorY = Ease2.getEase2(this.upVector[1], pos[1], timeInMilli);
         this.upVectorZ = Ease2.getEase2(this.upVector[2], pos[2], timeInMilli);
     }
 
     public void easePositionTo(float[] pos, long timeInMilli) {
-        if(this.posX != null){
-            return;
-        }
         this.posX = Ease2.getEase2(this.position[0], pos[0], timeInMilli);
         this.posY = Ease2.getEase2(this.position[1], pos[1], timeInMilli);
         this.posZ = Ease2.getEase2(this.position[2], pos[2], timeInMilli);
+    }
+
+    public boolean isEasing(){
+        return (this.posX != null || this.posY != null || this.posZ != null ||
+                this.targetX != null || this.targetY != null || this.targetZ != null ||
+                this.upVectorX != null || this.upVectorY != null || this.upVectorZ != null);
     }
 
     protected void startShake(long time) {

@@ -19,7 +19,6 @@ public class TextSelection extends Text {
         for(int i = 0; i < selections.length; i++){
             this.options[i] = new Text(selections[i]);
         }
-
         this.currentSelection = 0;
     }
 

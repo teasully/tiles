@@ -5,6 +5,8 @@ package project.etrumper.thomas.ghostbutton;
  */
 public class ObjectManager {
 
+    static int numIDS = 6;
+
     static public EntityTile3D getObject(final int ID, int x, int y, int z) {
         EntityTile3D returnEntity = null;
         switch (ID) {
@@ -13,24 +15,34 @@ public class ObjectManager {
                 break;
             // Player
             case (1):
-                returnEntity = new Avatar3D(new Vector3i(x, y, z));
-                GameConstants.camera.easePositionTo(new float[]{-x, -y, 0}, 500);
+                returnEntity = new Avatar3D_Computer();
                 break;
             // Wall
             case (2):
                 Vector3f color = MaterialManager.getColorPalette(0);
-                Block block = new Block("Scenery1");
-                block.setCurrentAnimation(block.addAnimation("wallstandard1"));
+                Block block = new Block(ID);
                 block.drawColor = color;
                 returnEntity = block;
                 break;
             // Disappearing wall
             case(3):
-                color = MaterialManager.getColorPalette(0);
-                block = new Block("Scenery1");
-                block.setCurrentAnimation(block.addAnimation("wallstandard1"));
+                color = MaterialManager.getColorPalette(1);
+                block = new Block_Turn(ID);
                 block.drawColor = color;
-                block.disappearTimer = 500;
+                returnEntity = block;
+                break;
+            // High jump block
+            case(4):
+                color = MaterialManager.getColorPalette(2);
+                block = new Block_HighJump(ID);
+                block.drawColor = color;
+                returnEntity = block;
+                break;
+            // Long jump block
+            case(5):
+                color = MaterialManager.getColorPalette(3);
+                block = new Block_LongJump(ID);
+                block.drawColor = color;
                 returnEntity = block;
                 break;
         }

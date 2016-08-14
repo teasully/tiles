@@ -35,7 +35,6 @@ public class SuperManager{//} extends AsyncTask<Void, Void, Void> {
         TouchManager.init();
         SoundManager.init();
         MaterialManager.init();
-        Overlay.init();
         //GestureManager.init();
         //tiltManager = TiltManager.init();
 
@@ -79,8 +78,9 @@ public class SuperManager{//} extends AsyncTask<Void, Void, Void> {
         }*/
         // If playing, update tile map elements
         if (Overlay.currentScreen == Overlay.CurrentScreen.OVERLAY_ONLY) {
-            //GameConstants.tileMap.update();
-            GameConstants.tileMap3D.update();
+            if(GameConstants.tileMap3D != null) {
+                GameConstants.tileMap3D.update();
+            }
         }
         // Update game constants and lights
         GameConstants.update();

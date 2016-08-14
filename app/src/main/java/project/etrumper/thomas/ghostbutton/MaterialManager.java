@@ -20,6 +20,7 @@ public class MaterialManager{
         // Basic colors
         newMaterial("LightBlue", new float[]{0.1f, 0.1f, 0.8f});
         newMaterial("Black", new float[]{0.2f, 0.2f, 0.2f});
+        newMaterial("Grey", new float[]{0.47f, 0.47f, 0.47f});
         newMaterial("White", new float[]{1f, 1f, 1f});
         newMaterial("Pink", new float[]{0.8f, 0f, 0.6f});
         newMaterial("Red", new float[]{0.8f, 0.f, 0.f});
