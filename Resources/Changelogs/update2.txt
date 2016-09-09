@@ -1,0 +1,16 @@
+Changlist
+-Added:
+--Level Editor found in main menu
+---Saving, loading, and sharing maps
+---Directional blocks
+---High and long jump blocks
+--Computer controlled cubes
+--Cubes roll instead of jump for movement
+--Cube landing animation
+-Removed:
+--Player controled cubes
+--Play functionality until some levels are made
+
+TODO:
+-Move updating to seperate thread to fix incorrect interpolation of time
+-Add sound to editor

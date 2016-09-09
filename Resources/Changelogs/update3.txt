@@ -1,0 +1,21 @@
+Changlist
+-Added:
+--Background to preivew blocks
+-Removed:
+-
+-Changed:
+--Preview blocks made smaller
+--Drag screen to move
+
+TODO:
+-Add three editor modes: MAP MAKING, MAP SOLVING, MAP TESTING
+--MAP MAKING: Using the editor to make maps
+--MAP SOLVING: Using the editor to solve maps made in the MAP MAKING editor
+--MAP TESTING: Using the editor to view the results of a solution
+-Add camera rotation in editor
+-Add blocks the player cannot remove
+-Add editor restriction on layers and IDs
+-Add end block
+-Replace placeholder buttons (playtest button, place button, pause button)
+-Move updating to seperate thread to fix incorrect interpolation of time
+-Add sound to editor
