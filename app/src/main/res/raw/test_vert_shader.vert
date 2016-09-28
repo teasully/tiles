@@ -21,7 +21,7 @@ void main(){
     float timeDistort1 = sin((elapsedTime / 2.0)) + 0.5;
     float timeDistort2 = cos((elapsedTime / 4.0)) + 0.5;
 
-	vec3 custom = vec3(0.0, 0.0, 0.0);
+	vec3 custom = vec3(timeDistort1, 0.0, 0.0);
 
     vec4 pos = vec4(uMVPMatrix * vPosition);
 	gl_Position = vec4(pos.x + custom.x, pos.y + custom.y, pos.z + custom.z, pos.w);
